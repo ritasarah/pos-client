@@ -20,6 +20,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -75,16 +76,8 @@ public class MainActivity extends ActionBarActivity {
 
         Log.d("id", String.valueOf(id));
 
-//        Viewer viewer = new Viewer();
-//        viewer.execute();
-        Intent intent = new Intent(this, Riwayat.class);
-        Bundle b = new Bundle();
-        b.putInt("id", id); //Your id
-        intent.putExtras(b); //Put your id to your next Intent
-        startActivity(intent);
-        finish();
-//        Intent intent = new Intent(this, MenuUtama.class);
-//        startActivity(intent);
+        Viewer viewer = new Viewer();
+        viewer.execute();
 
     }
     public boolean isNetworkAvailable() {
@@ -115,10 +108,10 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            if(isNetworkAvailable()) {
+//            if(isNetworkAvailable()) {
                 String result = "";
                 HttpClient client = new DefaultHttpClient();
-                HttpGet request = new HttpGet("http://192.168.1.1/fingerprint/api/getcredentials?id="+id);
+                HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/getcredentials?id="+id);
                 HttpResponse response;
 
                 try {
@@ -134,27 +127,28 @@ public class MainActivity extends ActionBarActivity {
 
                     try {
                         // Data
-                        JSONObject res = new JSONObject(result);
-                        nama = String.valueOf(res.getJSONObject("nama"));
-                        nik_ktp = String.valueOf(res.getJSONObject("nik_ktp"));
+                        JSONArray arrRes = new JSONArray(result);
+                        JSONObject res = (JSONObject) arrRes.get(0);
+                        Log.d("Jsonresult",res.toString());
+                        nama = res.getString("nama");
+                        nik_ktp = res.getString("nik_ktp");
                         saldo = res.getInt("saldo");
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    Log.d("nama",nama);
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "Anda tidak terhubung ke internet", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+//            } else {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getApplicationContext(), "Anda tidak terhubung ke internet", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
 
             return "";
         }

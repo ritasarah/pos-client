@@ -30,11 +30,12 @@ public class MenuUtama extends ActionBarActivity {
         Bundle b = getIntent().getExtras();
         String nama=null;
 
-//        if(b != null)
-//            nama = b.getString("nama");
+        if(b != null)
+            nama = b.getString("nama");
 
         TextView hai = (TextView) findViewById(R.id.hai);
-//        hai.append(nama);
+        hai.append(nama);
+
     }
 
 

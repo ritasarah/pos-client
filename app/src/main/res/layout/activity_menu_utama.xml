@@ -18,19 +18,18 @@
         android:layout_height="wrap_content"
         android:text="Belanja"
         android:id="@+id/belanja"
+        android:onClick="belanjaClicked"
         android:layout_below="@+id/hai"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="82dp"
-        android:onClick="belanjaClicked" />
+        android:layout_alignLeft="@+id/riwayat" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Riwayat"
         android:id="@+id/riwayat"
+        android:layout_marginTop="53dp"
+        android:onClick="riwayatClicked"
         android:layout_below="@+id/belanja"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="82dp"
-        android:onClick="riwayatClicked" />
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
