@@ -75,9 +75,12 @@ public class MainActivity extends ActionBarActivity {
         }
 
         Log.d("id", String.valueOf(id));
-
-        Viewer viewer = new Viewer();
-        viewer.execute();
+        if (id>0) {
+            Viewer viewer = new Viewer();
+            viewer.execute();
+        }else {
+            Toast.makeText(this, "Input ID " , Toast.LENGTH_LONG).show();
+        }
 
     }
     public boolean isNetworkAvailable() {

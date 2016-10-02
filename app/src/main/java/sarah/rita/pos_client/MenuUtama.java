@@ -19,6 +19,9 @@ import java.net.URLEncoder;
 public class MenuUtama extends ActionBarActivity {
 
     int id = 0; // or other values
+    String nama = null;
+    int saldo = 0 ;
+    String nik_ktp = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +31,14 @@ public class MenuUtama extends ActionBarActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         Bundle b = getIntent().getExtras();
-        String nama=null;
 
-        if(b != null)
+        if(b != null) {
+            id= b.getInt("id");
             nama = b.getString("nama");
+            saldo = b.getInt("saldo");
+            nik_ktp = b.getString("nik_ktp");
+            nama= b.getString("nama");
+        }
 
         TextView hai = (TextView) findViewById(R.id.hai);
         hai.append(nama);
@@ -62,22 +69,26 @@ public class MenuUtama extends ActionBarActivity {
     }
 
     public void belanjaClicked(View v){
-        Toast.makeText(this, "Belanja" , Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Belanja" , Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(this, Belanja.class);
         Bundle b = new Bundle();
         b.putInt("id", id); //Your id
+        b.putInt("saldo",saldo);
+        b.putString("nama",nama);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
         finish();
     }
 
     public void riwayatClicked(View v){
-        Toast.makeText(this, "Riwayat" , Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Riwayat" , Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(this, Riwayat.class);
         Bundle b = new Bundle();
         b.putInt("id", id); //Your id
+        b.putInt("saldo",saldo);
+        b.putString("nama",nama);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
         finish();

@@ -1,6 +1,8 @@
 package sarah.rita.pos_client;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -57,12 +60,23 @@ public class Belanja extends ActionBarActivity {
     private LinearLayout subRowLayout;
 
     private ArrayList<String> judulSaved;
-    private ArrayList<String> tanggalSaved;
-    private ArrayList<String> keteranganSaved;
+    private ArrayList<Integer> hargaSaved;
+    private ArrayList<Integer> stokSaved;
     private ArrayList<String> linkSaved;
+
+    private ArrayList<String> namaBarang;
+    private ArrayList<Integer> qtyBarang;
+
+    int id = 0 ;
+    int saldo = 0;
+    String nama = null;
+
+    int curSaldo = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        namaBarang = new ArrayList<>();
+        qtyBarang = new ArrayList<>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_belanja);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -72,6 +86,14 @@ public class Belanja extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        Bundle b = getIntent().getExtras();
+        if(b != null) {
+            nama = b.getString("nama");
+            saldo = b.getInt("saldo");
+            Log.d("saldo", String.valueOf(saldo));
+        }
+        curSaldo=saldo;
 
         Viewer v = new Viewer();
         v.execute();
@@ -149,7 +171,7 @@ public class Belanja extends ActionBarActivity {
 
         int dataLength = judulSaved.size();
         for (int i = 0; i < dataLength; i++) {
-            generateUI(judulSaved.get(i), tanggalSaved.get(i), keteranganSaved.get(i), linkSaved.get(i));
+            generateUI(judulSaved.get(i), hargaSaved.get(i), stokSaved.get(i), linkSaved.get(i));
             if (i != dataLength) {
                 rowLayout.addView(colLayout);
                 myLinearLayout.addView(rowLayout);
@@ -162,7 +184,7 @@ public class Belanja extends ActionBarActivity {
     }
 
     // Fungsi untuk generate komponen-komponen tampilan
-    public void generateUI (String judul, String tanggal, String keterangan, String linkGambar) {
+    public void generateUI (final String judul, final int harga, final int stok, String linkGambar) {
         Display display = getWindowManager().getDefaultDisplay();
         int image_width = display.getWidth()/3;
         int image_height = (int) (display.getHeight()/4.3);
@@ -182,7 +204,7 @@ public class Belanja extends ActionBarActivity {
 
         // Add text View TitleEventTV
         TitleEventTV = new TextView(this);
-        TitleEventTV.setText("Event: ");
+        TitleEventTV.setText("Nama : ");
 //        TitleEventTV.setTextColor(defaultColor);
         TitleEventTV.setLayoutParams(paramsJarakAntarIsi);
 //        TitleEventTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
@@ -204,7 +226,7 @@ public class Belanja extends ActionBarActivity {
 
         // Add text View TitleTanggalTV
         TitleTanggalTV = new TextView(this);
-        TitleTanggalTV.setText("Tanggal: ");
+        TitleTanggalTV.setText("Harga: ");
 //        TitleTanggalTV.setTextColor(defaultColor);
 //        TitleTanggalTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
         TitleTanggalTV.setLayoutParams(paramsJarakAntarIsi);
@@ -212,44 +234,44 @@ public class Belanja extends ActionBarActivity {
 
         // Add text View JudulTanggalTV
         JudulTanggalTV= new TextView(this);
-        JudulTanggalTV.setText(tanggal);
+        JudulTanggalTV.setText(String.valueOf(harga));
 //        JudulTanggalTV.setTextColor(defaultColor);
         JudulTanggalTV.setLayoutParams(paramsJarakAntarIsi);
         subRowLayout.addView(JudulTanggalTV);
         colLayout.addView(subRowLayout);
         subRowLayout = new LinearLayout(this);
 
-        // Add text View TitleWaktuTV
-        TitleWaktuTV = new TextView(this);
-        TitleWaktuTV.setText("Waktu: ");
-//        TitleWaktuTV.setTextColor(defaultColor);
-//        TitleWaktuTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
-        TitleWaktuTV.setLayoutParams(paramsJarakAntarIsi);
-        subRowLayout.addView(TitleWaktuTV);
+//        // Add text View TitleWaktuTV
+//        TitleWaktuTV = new TextView(this);
+//        TitleWaktuTV.setText("Waktu: ");
+////        TitleWaktuTV.setTextColor(defaultColor);
+////        TitleWaktuTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
+//        TitleWaktuTV.setLayoutParams(paramsJarakAntarIsi);
+//        subRowLayout.addView(TitleWaktuTV);
 
-        // Add text View JudulWaktuTV
-        JudulWaktuTV = new TextView(this);
-        JudulWaktuTV.setText(tanggal);
-//        JudulWaktuTV.setTextColor(defaultColor);
-        JudulWaktuTV.setLayoutParams(paramsJarakAntarIsi);
-        subRowLayout.addView(JudulWaktuTV);
-        colLayout.addView(subRowLayout);
-        subRowLayout = new LinearLayout(this);
+//        // Add text View JudulWaktuTV
+//        JudulWaktuTV = new TextView(this);
+//        JudulWaktuTV.setText(tanggal);
+////        JudulWaktuTV.setTextColor(defaultColor);
+//        JudulWaktuTV.setLayoutParams(paramsJarakAntarIsi);
+//        subRowLayout.addView(JudulWaktuTV);
+//        colLayout.addView(subRowLayout);
+//        subRowLayout = new LinearLayout(this);
 
         // Add text View TitleKeteranganTV
         TitleKeteranganTV = new TextView(this);
-        TitleKeteranganTV.setText("Keterangan: ");
+        TitleKeteranganTV.setText("Stok: ");
 //        TitleKeteranganTV.setTextColor(defaultColor);
         TitleKeteranganTV.setLayoutParams(paramsJarakAntarIsi);
         subRowLayout.addView(TitleKeteranganTV);
 
         // Add text View IsiKeteranganTV
         IsiKeteranganTV = new TextView(this);
-        if (keterangan.length() > 80) {
-            keterangan = keterangan.substring(0, 80);
-            keterangan = keterangan + "...";
-        }
-        IsiKeteranganTV.setText(keterangan);
+//        if (keterangan.length() > 80) {
+//            keterangan = keterangan.substring(0, 80);
+//            keterangan = keterangan + "...";
+//        }
+        IsiKeteranganTV.setText(String.valueOf(stok));
 //        IsiKeteranganTV.setTextColor(defaultColor);
         IsiKeteranganTV.setLayoutParams(paramsJarakAntarIsi);
         subRowLayout.addView(IsiKeteranganTV);
@@ -258,7 +280,7 @@ public class Belanja extends ActionBarActivity {
 
         // Add selengkapnya button
         SelengkapnyaBtn = new Button(this);
-        SelengkapnyaBtn.setText("Selengkapnya");
+        SelengkapnyaBtn.setText("Beli");
 //        SelengkapnyaBtn.setTextColor(getResources().getColor(R.color.white));
         SelengkapnyaBtn.setLayoutParams(paramsJarakIsiDenganButton);
 //        SelengkapnyaBtn.setBackgroundColor(getResources().getColor(R.color.header));
@@ -266,21 +288,66 @@ public class Belanja extends ActionBarActivity {
         colLayout.addView(subRowLayout);
 
         final String finalJudul = judul;
-        final String finalTanggal = tanggal;
-        final String finalKeterangan = keterangan;
         final String finalLinkGambar = linkGambar;
         SelengkapnyaBtn.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Masuk ke konstruktor parameter EventLengkapFragment dengan parameter judul, tanggal, keterangan, dan gambar
-//                        frag = new EventLengkapFragment(finalJudul, finalTanggal, finalKeterangan, finalLinkGambar);
-//                        fragManager = getActivity().getSupportFragmentManager();
-//                        fragTransaction = fragManager.beginTransaction();
-//                        fragTransaction.replace(R.id.container, frag);
-//                        fragTransaction.addToBackStack(null);
-//                        fragTransaction.commi
-//                        t();
+                        Toast.makeText(Belanja.this, "Beli" , Toast.LENGTH_LONG).show();
+
+                        final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
+
+                        // Setting Dialog Title
+                        alertDialog2.setTitle("Masukkan Jumlah");
+
+                        // Setting Dialog Message
+                        alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
+                        final EditText input = new EditText(Belanja.this);
+                        alertDialog2.setView(input);
+
+                        // Setting Positive "Yes" Btn
+                        alertDialog2.setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // cek cursaldo - (qty x harga) > 0
+                                        if ((curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga) > 0) && (stok > Integer.parseInt(String.valueOf(input.getText())))) {
+                                            Log.d("saldo",String.valueOf(saldo));
+                                            curSaldo  = curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga);
+                                            Log.d("cursaldo",String.valueOf(curSaldo));
+                                            if(namaBarang.contains(judul)){
+                                                qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
+                                            }
+                                            else{
+                                                qtyBarang.add(Integer.parseInt(String.valueOf(input.getText())) );
+                                                namaBarang.add(judul);
+                                            }
+                                            Log.d("nama barangs",namaBarang.toString());
+                                            Log.d("qty barangs",qtyBarang.toString());
+                                        }else {
+                                            // Write your code here to execute after dialog
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Gagal Memroses", Toast.LENGTH_SHORT)
+                                                    .show();
+                                            alertDialog2.create().dismiss();
+
+                                        }
+                                    }
+                                });
+
+                        // Setting Negative "NO" Btn
+                        alertDialog2.setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Write your code here to execute after dialog
+                                        Toast.makeText(getApplicationContext(),
+                                                "Pembelian Dibatalkan", Toast.LENGTH_SHORT)
+                                                .show();
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        // Showing Alert Dialog
+                        alertDialog2.show();
                     }
                 }
         );
@@ -309,7 +376,6 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
-            setUpLayout();
 
         }
 
@@ -357,15 +423,22 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            setUpLayout();
 
             for (int i=0;i<arrRes.length();i++){
-                JSONObject res = (JSONObject) arrRes.get(i);
-                Log.d("json oj",res.toString());
+                JSONObject res = null;
+                try {
+                    res = (JSONObject) arrRes.get(i);
+                    Log.d("json oj",res.toString());
 
-                String nama = res.getString("nama");
-                int stok = res.getInt("stok");
-                int harga = res.getInt("harga");
-                generateUI(nama,String.valueOf(harga),String.valueOf(stok),"");
+                    String nama = res.getString("nama");
+                    int stok = res.getInt("stok");
+                    int harga = res.getInt("harga");
+                    generateUI(nama,harga,stok,"");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 if (i != arrRes.length()) {
                     rowLayout.addView(colLayout);
