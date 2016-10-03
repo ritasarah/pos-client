@@ -1,5 +1,7 @@
 package sarah.rita.pos_client;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
@@ -12,9 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -52,6 +56,8 @@ public class Riwayat extends ActionBarActivity {
     private ArrayList<String> keteranganSaved;
     private ArrayList<String> linkSaved;
 
+    int reqtype = 0;
+
     int saldo = 0;
     int id = 0;
     String nama = null;
@@ -69,9 +75,6 @@ public class Riwayat extends ActionBarActivity {
             saldo = b.getInt("saldo");
             id= b.getInt("id");
         }
-
-        Viewer v = new Viewer();
-        v.execute();
 
     }
 
@@ -96,6 +99,48 @@ public class Riwayat extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public void barangClicked(View v){
+        final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
+
+        // Setting Dialog Title
+        alertDialog2.setTitle("Masukkan Nama Barang");
+
+        // Setting Dialog Message
+        alertDialog2.setMessage("Masukkan nama barang yang untuk mengetahui riwayat pembelian");
+        final EditText input = new EditText(Riwayat.this);
+        alertDialog2.setView(input);
+
+        // Setting Positive "Yes" Btn
+        alertDialog2.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        reqtype=5;
+
+                        Viewer v = new Viewer();
+                        v.execute();
+
+                    }
+                });
+
+        // Setting Negative "NO" Btn
+        alertDialog2.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to execute after dialog
+                        Toast.makeText(getApplicationContext(),
+                                "Pencarian Dibatalkan", Toast.LENGTH_SHORT)
+                                .show();
+                        dialog.cancel();
+                    }
+                });
+
+        // Showing Alert Dialog
+        alertDialog2.show();
+    }
+
+    public void waktuClicked(View v){
+
     }
 
     // Fungsi untuk menyiapkan layout tampilan
@@ -227,14 +272,21 @@ public class Riwayat extends ActionBarActivity {
         JSONArray arrRes;
 
         @Override
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+            reqtype = 1;
+        }
 
         @Override
         protected String doInBackground(String... params) {
 //            if(isNetworkAvailable()) {
             String result = "";
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id);
+            HttpGet request;
+            if (reqtype==5){
+                request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistorybarang?id="+id);
+            }else{
+                request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
+            }
             HttpResponse response;
 
             try {

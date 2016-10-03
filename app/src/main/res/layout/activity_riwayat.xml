@@ -7,11 +7,34 @@
     tools:context="sarah.rita.pos_client.Riwayat">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|center_vertical"
         android:id="@+id/container_listriwayat">
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waktu"
+            android:id="@+id/waktu"
+            android:onClick="waktuClicked"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Barang"
+            android:id="@+id/barang"
+            android:onClick="barangClicked"/>
+
+        <ScrollView
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/container_svriwayat">
+
+        </ScrollView>
     </LinearLayout>
+
 </RelativeLayout>

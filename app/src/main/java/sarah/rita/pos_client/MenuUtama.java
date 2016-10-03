@@ -20,7 +20,7 @@ public class MenuUtama extends ActionBarActivity {
 
     int id = 0; // or other values
     String nama = null;
-    int saldo = 0 ;
+    long saldo = 0 ;
     String nik_ktp = null;
 
     @Override
@@ -35,7 +35,7 @@ public class MenuUtama extends ActionBarActivity {
         if(b != null) {
             id= b.getInt("id");
             nama = b.getString("nama");
-            saldo = b.getInt("saldo");
+            saldo = b.getLong("saldo");
             nik_ktp = b.getString("nik_ktp");
             nama= b.getString("nama");
         }
@@ -74,7 +74,7 @@ public class MenuUtama extends ActionBarActivity {
         Intent intent = new Intent(this, Belanja.class);
         Bundle b = new Bundle();
         b.putInt("id", id); //Your id
-        b.putInt("saldo",saldo);
+        b.putLong("saldo",saldo);
         b.putString("nama",nama);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
@@ -87,7 +87,7 @@ public class MenuUtama extends ActionBarActivity {
         Intent intent = new Intent(this, Riwayat.class);
         Bundle b = new Bundle();
         b.putInt("id", id); //Your id
-        b.putInt("saldo",saldo);
+        b.putLong("saldo",saldo);
         b.putString("nama",nama);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);

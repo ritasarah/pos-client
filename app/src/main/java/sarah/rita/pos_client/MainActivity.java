@@ -103,7 +103,7 @@ public class MainActivity extends ActionBarActivity {
 
     class Viewer extends AsyncTask<String, String, String> {
         String nik_ktp;
-        int saldo;
+        long saldo;
         String nama;
 
         @Override
@@ -135,7 +135,7 @@ public class MainActivity extends ActionBarActivity {
                         Log.d("Jsonresult",res.toString());
                         nama = res.getString("nama");
                         nik_ktp = res.getString("nik_ktp");
-                        saldo = res.getInt("saldo");
+                        saldo = res.getLong("saldo");
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -161,7 +161,7 @@ public class MainActivity extends ActionBarActivity {
             Intent intent = new Intent(MainActivity.this, MenuUtama.class);
             Bundle b = new Bundle();
             b.putInt("id", id); //Your id
-            b.putInt("saldo",saldo);
+            b.putLong("saldo",saldo);
             b.putString("nik_ktp",nik_ktp);
             b.putString("nama",nama);
             intent.putExtras(b); //Put your id to your next Intent
