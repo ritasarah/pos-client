@@ -1,0 +1,2 @@
+- belum ada fragment stack, jadi kalo di-back langsung exit
+- kalau screen jadi off, ga kesimpen data yg udah di entry & harus ngulang dr awal

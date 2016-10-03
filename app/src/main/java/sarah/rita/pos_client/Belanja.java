@@ -67,7 +67,25 @@ public class Belanja extends ActionBarActivity {
 
     private ArrayList<String> namaBarang;
     private ArrayList<Integer> qtyBarang;
+
+    private class boughtObj {
+        public String namaBarang;
+        public int qtyBarang;
+        public long sum;
+        public String urlImage;
+
+        public boughtObj(String _nama, int _qty, long _sum, String _url) {
+            namaBarang = _nama;
+            qtyBarang = _qty;
+            sum = _sum;
+            urlImage = _url;
+        }
+    }
+
+    private ArrayList<boughtObj> boughObjList;
+
     private LinearLayout scrollViewLayout;
+    private LinearLayout scrollViewBoughtLayout;
 
     int id = 0 ;
     int saldo = 0;
@@ -188,7 +206,20 @@ public class Belanja extends ActionBarActivity {
         }
     }
 
-    public void generateUI (final String judul, final int harga, final int stok, String linkGambar) {
+    private int searchInBoughtList (String _nama) {
+        int i = 0;
+        boolean found = false;
+        while (i<boughObjList.size() && !found) {
+            if (boughObjList.get(i).namaBarang.equals(_nama))
+                found = true;
+            else
+                i++;
+        }
+        if (found) return i;
+        else return -1;
+    }
+
+    public void generateUI (final String judul, final int harga, final int stok, final String linkGambar) {
         Display display = getWindowManager().getDefaultDisplay();
         int image_width = display.getWidth()/3;
         int image_height = (int) (display.getHeight()/4.3);
@@ -271,24 +302,46 @@ public class Belanja extends ActionBarActivity {
                     alertDialog2.setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                int qty = Integer.parseInt(String.valueOf(input.getText()));
+
                                 // cek cursaldo - (qty x harga) > 0
-                                if ((curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga) > 0) && (stok > Integer.parseInt(String.valueOf(input.getText())))) {
+                                if ((curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga) >= 0) && (stok >= Integer.parseInt(String.valueOf(input.getText())))) {
                                     Log.d("saldo",String.valueOf(saldo));
                                     curSaldo  = curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga);
                                     Log.d("cursaldo",String.valueOf(curSaldo));
                                     if(namaBarang.contains(judul)){
-                                        qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
+//                                        qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
+                                        qtyBarang.set(namaBarang.indexOf(judul),(qty));
+                                        int idx = searchInBoughtList(judul);
+                                        if (idx > 0) {
+                                            boughObjList.get(idx).qtyBarang = qty;
+                                        }
                                     }
                                     else{
-                                        qtyBarang.add(Integer.parseInt(String.valueOf(input.getText())) );
+                                        Integer sumInt = qty * harga;
+                                        long sum = sumInt.longValue();
+                                        boughtObj bO = new boughtObj(judul, qty, sum, linkGambar);
+                                        boughObjList.add(bO);
+                                        qtyBarang.add(qty);
                                         namaBarang.add(judul);
                                     }
                                     Log.d("nama barangs",namaBarang.toString());
                                     Log.d("qty barangs",qtyBarang.toString());
-                                }else {
+
+//                                    addBoughtList(judul, Integer.parseInt(String.valueOf(input.getText())), linkGambar, qty * harga);
+                                    addBoughtList(judul, qty, linkGambar, qty * harga);
+                                }
+                                else if (curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga) < 0) {
                                     // Write your code here to execute after dialog
                                     Toast.makeText(getApplicationContext(),
-                                            "Gagal Memroses", Toast.LENGTH_SHORT)
+                                            "Saldo Anda tidak cukup", Toast.LENGTH_SHORT)
+                                            .show();
+                                    alertDialog2.create().dismiss();
+                                }
+                                else if (stok < Integer.parseInt(String.valueOf(input.getText()))) {
+                                    // Write your code here to execute after dialog
+                                    Toast.makeText(getApplicationContext(),
+                                            "Stok barang tidak mencukupi", Toast.LENGTH_SHORT)
                                             .show();
                                     alertDialog2.create().dismiss();
                                 }
@@ -318,7 +371,7 @@ public class Belanja extends ActionBarActivity {
         scrollViewLayout.addView(rowLayout);
     }
 
-    public void addBoughtList(String namaBarang, int qty, String imageURL, int sum) {
+    public void addBoughtList(String namaBarang, final int qty, String imageURL, final int sum) {
         // Add image View
         ImageView GambarIV = new ImageView(this);
 
@@ -330,7 +383,7 @@ public class Belanja extends ActionBarActivity {
         marginHorizontal.setMargins(0, 5, 0, 0);
 
         // Define layout
-        LinearLayout rowLayout = new LinearLayout(this);
+        final LinearLayout rowLayout = new LinearLayout(this);
         rowLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         LinearLayout infoLayout = new LinearLayout(this);
@@ -381,12 +434,10 @@ public class Belanja extends ActionBarActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        scrollViewBoughtLayout.removeView(rowLayout);
                     }
                 }
         );
-
-
 
         // Make change button
         Button chgBtn = new Button(Belanja.this);
@@ -398,65 +449,67 @@ public class Belanja extends ActionBarActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
-
-                        // Setting Dialog Title
-                        alertDialog2.setTitle("Masukkan Jumlah");
-
-                        // Setting Dialog Message
-                        alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
-                        final EditText input = new EditText(Belanja.this);
-                        alertDialog2.setView(input);
-
-                        // Setting Positive "Yes" Btn
-                        alertDialog2.setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // cek cursaldo - (qty x harga) > 0
-                                        if ((curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga) > 0) && (stok > Integer.parseInt(String.valueOf(input.getText())))) {
-                                            Log.d("saldo",String.valueOf(saldo));
-                                            curSaldo  = curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga);
-                                            Log.d("cursaldo",String.valueOf(curSaldo));
-                                            if(namaBarang.contains(judul)){
-                                                qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
-                                            }
-                                            else{
-                                                qtyBarang.add(Integer.parseInt(String.valueOf(input.getText())) );
-                                                namaBarang.add(judul);
-                                            }
-                                            Log.d("nama barangs",namaBarang.toString());
-                                            Log.d("qty barangs",qtyBarang.toString());
-                                        }else {
-                                            // Write your code here to execute after dialog
-                                            Toast.makeText(getApplicationContext(),
-                                                    "Gagal Memroses", Toast.LENGTH_SHORT)
-                                                    .show();
-                                            alertDialog2.create().dismiss();
-                                        }
-                                    }
-                                });
-
-                        // Setting Negative "NO" Btn
-                        alertDialog2.setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Write your code here to execute after dialog
-                                        Toast.makeText(getApplicationContext(),
-                                                "Pembelian Dibatalkan", Toast.LENGTH_SHORT)
-                                                .show();
-                                        dialog.cancel();
-                                    }
-                                });
-
-                        // Showing Alert Dialog
-                        alertDialog2.show();
+//                        final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
+//
+//                        // Setting Dialog Title
+//                        alertDialog2.setTitle("Masukkan Jumlah");
+//
+//                        // Setting Dialog Message
+//                        alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
+//                        final EditText input = new EditText(Belanja.this);
+//                        alertDialog2.setView(input);
+//
+//                        // Setting Positive "Yes" Btn
+//                        alertDialog2.setPositiveButton("OK",
+//                                new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        input.setText(Integer.toString(qty));
+//
+//                                        // cek cursaldo - (qty x harga) > 0
+//                                        if ((curSaldo - sum > 0) && (stok > Integer.parseInt(String.valueOf(input.getText())))) {
+//                                            Log.d("saldo",String.valueOf(saldo));
+//                                            curSaldo  = curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga);
+//                                            Log.d("cursaldo",String.valueOf(curSaldo));
+//                                            if(namaBarang.contains(judul)){
+//                                                qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
+//                                            }
+//                                            else{
+//                                                qtyBarang.add(Integer.parseInt(String.valueOf(input.getText())) );
+//                                                namaBarang.add(judul);
+//                                            }
+//                                            Log.d("nama barangs",namaBarang.toString());
+//                                            Log.d("qty barangs",qtyBarang.toString());
+//                                        }else {
+//                                            // Write your code here to execute after dialog
+//                                            Toast.makeText(getApplicationContext(),
+//                                                    "Gagal Memroses", Toast.LENGTH_SHORT)
+//                                                    .show();
+//                                            alertDialog2.create().dismiss();
+//                                        }
+//                                    }
+//                                });
+//
+//                        // Setting Negative "NO" Btn
+//                        alertDialog2.setNegativeButton("Cancel",
+//                                new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        // Write your code here to execute after dialog
+//                                        Toast.makeText(getApplicationContext(),
+//                                                "Pembelian Dibatalkan", Toast.LENGTH_SHORT)
+//                                                .show();
+//                                        dialog.cancel();
+//                                    }
+//                                });
+//
+//                        // Showing Alert Dialog
+//                        alertDialog2.show();
                     }
                 }
         );
 
 
         // Attack rowLayout to mainLayout
-        scrollViewLayout.addView(rowLayout);
+        scrollViewBoughtLayout.addView(rowLayout);
     }
 
     // Fungsi untuk generate komponen-komponen tampilan
@@ -654,7 +707,11 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
+            scrollViewLayout = new LinearLayout(Belanja.this);
+            scrollViewLayout.setOrientation(LinearLayout.VERTICAL);
 
+            scrollViewBoughtLayout = new LinearLayout(Belanja.this);
+            scrollViewBoughtLayout.setOrientation(LinearLayout.VERTICAL);
         }
 
         @Override
@@ -703,10 +760,6 @@ public class Belanja extends ActionBarActivity {
         protected void onPostExecute(String result) {
 //            setUpLayout();
 
-            scrollViewLayout = new LinearLayout(Belanja.this);
-//            scrollViewLayout = (LinearLayout) findViewById(R.id.scrollview_layout);
-            scrollViewLayout.setOrientation(LinearLayout.VERTICAL);
-
             for (int i=0;i<arrRes.length();i++){
                 JSONObject res = null;
                 try {
@@ -754,7 +807,8 @@ public class Belanja extends ActionBarActivity {
             ScrollView daftarBelanjaSV = (ScrollView) findViewById(R.id.scrollview_listbelanja);
             daftarBelanjaSV.addView(scrollViewLayout);
 
-
+            ScrollView daftarBelanjaDibeliSV = (ScrollView) findViewById(R.id.scrollview_belanja);
+            daftarBelanjaDibeliSV.addView(scrollViewBoughtLayout);
         }
     }
 
