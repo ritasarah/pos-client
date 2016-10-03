@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +67,7 @@ public class Belanja extends ActionBarActivity {
 
     private ArrayList<String> namaBarang;
     private ArrayList<Integer> qtyBarang;
+    private LinearLayout scrollViewLayout;
 
     int id = 0 ;
     int saldo = 0;
@@ -88,7 +90,7 @@ public class Belanja extends ActionBarActivity {
         }
 
         Bundle b = getIntent().getExtras();
-        if(b != null) {
+            if(b != null) {
             nama = b.getString("nama");
             saldo = b.getInt("saldo");
             Log.d("saldo", String.valueOf(saldo));
@@ -140,30 +142,33 @@ public class Belanja extends ActionBarActivity {
 
     // Fungsi untuk menyiapkan layout tampilan
     public void setUpLayout(){
-        myLinearLayout = (LinearLayout) findViewById(R.id.container_listbelanja);
-        myLinearLayout.setOrientation(LinearLayout.VERTICAL);
-        myLinearLayout.removeAllViews();
+//        myLinearLayout = (LinearLayout) findViewById(R.id.container_listbelanja);
+//        myLinearLayout.setOrientation(LinearLayout.VERTICAL);
+//        myLinearLayout.removeAllViews();
+//
+//        // Add LayoutParams
+//        paramsJarakAntarEvent = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//        paramsJarakAntarEvent.setMargins(0, 15, 20, 0);
+//
+//        paramsJarakAntarIsi = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//        paramsJarakAntarIsi.setMargins(5, 0, 0, 0);
+//
+//        paramsJarakIsiDenganButton = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//        paramsJarakIsiDenganButton.setMargins(5, 5, 0, 15);
+//
+//        rowLayout = new LinearLayout(this);
+//        rowLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        // Add LayoutParams
-        paramsJarakAntarEvent = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsJarakAntarEvent.setMargins(0, 15, 20, 0);
-
-        paramsJarakAntarIsi = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsJarakAntarIsi.setMargins(5, 0, 0, 0);
-
-        paramsJarakIsiDenganButton = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsJarakIsiDenganButton.setMargins(5, 5, 0, 15);
-
-        rowLayout = new LinearLayout(this);
-        rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+//        scrollViewLayout = new LinearLayout(this);
+//        scrollViewLayout.setOrientation(LinearLayout.VERTICAL);
 
         // Buat linear layout vertical untuk menampung kata-kata
-        colLayout = new LinearLayout(this);
-        colLayout.setOrientation(LinearLayout.VERTICAL);
-        colLayout.setPadding(0, 10, 10, 0);
-
-        subRowLayout = new LinearLayout(this);
-        subRowLayout.setOrientation(LinearLayout.HORIZONTAL);
+//        colLayout = new LinearLayout(this);
+//        colLayout.setOrientation(LinearLayout.VERTICAL);
+//        colLayout.setPadding(0, 10, 10, 0);
+//
+//        subRowLayout = new LinearLayout(this);
+//        subRowLayout.setOrientation(LinearLayout.HORIZONTAL);
     }
 
     public void generateKontenEvent() {
@@ -183,8 +188,279 @@ public class Belanja extends ActionBarActivity {
         }
     }
 
-    // Fungsi untuk generate komponen-komponen tampilan
     public void generateUI (final String judul, final int harga, final int stok, String linkGambar) {
+        Display display = getWindowManager().getDefaultDisplay();
+        int image_width = display.getWidth()/3;
+        int image_height = (int) (display.getHeight()/4.3);
+
+        // Add image View
+        ImageView GambarIV = new ImageView(this);
+
+        // Define margins
+        LinearLayout.LayoutParams marginVertical = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        marginVertical.setMargins(5, 0, 0, 0);
+
+        LinearLayout.LayoutParams marginHorizontal = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        marginHorizontal.setMargins(0, 5, 0, 0);
+
+        // Define layout
+        LinearLayout rowLayout = new LinearLayout(this);
+        rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        LinearLayout infoLayout = new LinearLayout(this);
+        infoLayout.setOrientation(LinearLayout.VERTICAL);
+
+        // Make component and attach to layout
+
+        // Loading image from below url into imageView
+//        Picasso.with(getActivity())
+//                .load(linkGambar)
+//                .resize(image_height, image_width)
+//                .into(GambarIV);
+//        GambarIV.setLayoutParams(paramsJarakAntarEvent);
+//        rowLayout.addView(GambarIV);
+
+
+        // Make info component
+        TextView infoTV = new TextView(this);
+        String infoStr = "Nama: " + judul;
+        infoTV.setText(infoStr);
+//        infoTV.setTextColor(defaultColor);
+        infoTV.setLayoutParams(marginVertical);
+//        infoTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
+        infoLayout.addView(infoTV);
+
+        infoTV = new TextView(this);
+        infoStr = "Harga: " + harga;
+        infoTV.setText(infoStr);
+        infoTV.setLayoutParams(marginVertical);
+        infoLayout.addView(infoTV);
+
+        infoTV = new TextView(this);
+        infoStr = "Stok: " + stok;
+        infoTV.setText(infoStr);
+        infoTV.setLayoutParams(marginVertical);
+        infoLayout.addView(infoTV);
+
+        rowLayout.addView(infoLayout);
+
+
+        // Make buy button
+        Button buyBtn = new Button(Belanja.this);
+        buyBtn.setText("Beli");
+        buyBtn.setLayoutParams(marginHorizontal);
+        rowLayout.addView(buyBtn);
+
+        final String finalJudul = judul;
+        final String finalLinkGambar = linkGambar;
+        buyBtn.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
+
+                    // Setting Dialog Title
+                    alertDialog2.setTitle("Masukkan Jumlah");
+
+                    // Setting Dialog Message
+                    alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
+                    final EditText input = new EditText(Belanja.this);
+                    alertDialog2.setView(input);
+
+                    // Setting Positive "Yes" Btn
+                    alertDialog2.setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // cek cursaldo - (qty x harga) > 0
+                                if ((curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga) > 0) && (stok > Integer.parseInt(String.valueOf(input.getText())))) {
+                                    Log.d("saldo",String.valueOf(saldo));
+                                    curSaldo  = curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga);
+                                    Log.d("cursaldo",String.valueOf(curSaldo));
+                                    if(namaBarang.contains(judul)){
+                                        qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
+                                    }
+                                    else{
+                                        qtyBarang.add(Integer.parseInt(String.valueOf(input.getText())) );
+                                        namaBarang.add(judul);
+                                    }
+                                    Log.d("nama barangs",namaBarang.toString());
+                                    Log.d("qty barangs",qtyBarang.toString());
+                                }else {
+                                    // Write your code here to execute after dialog
+                                    Toast.makeText(getApplicationContext(),
+                                            "Gagal Memroses", Toast.LENGTH_SHORT)
+                                            .show();
+                                    alertDialog2.create().dismiss();
+                                }
+                            }
+                        });
+
+                    // Setting Negative "NO" Btn
+                    alertDialog2.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Write your code here to execute after dialog
+                                Toast.makeText(getApplicationContext(),
+                                        "Pembelian Dibatalkan", Toast.LENGTH_SHORT)
+                                        .show();
+                                dialog.cancel();
+                            }
+                        });
+
+                    // Showing Alert Dialog
+                    alertDialog2.show();
+                }
+            }
+        );
+
+
+        // Attack rowLayout to mainLayout
+        scrollViewLayout.addView(rowLayout);
+    }
+
+    public void addBoughtList(String namaBarang, int qty, String imageURL, int sum) {
+        // Add image View
+        ImageView GambarIV = new ImageView(this);
+
+        // Define margins
+        LinearLayout.LayoutParams marginVertical = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        marginVertical.setMargins(5, 0, 0, 0);
+
+        LinearLayout.LayoutParams marginHorizontal = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        marginHorizontal.setMargins(0, 5, 0, 0);
+
+        // Define layout
+        LinearLayout rowLayout = new LinearLayout(this);
+        rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        LinearLayout infoLayout = new LinearLayout(this);
+        infoLayout.setOrientation(LinearLayout.VERTICAL);
+
+        // Make component and attach to layout
+
+        // Loading image from below url into imageView
+//        Picasso.with(getActivity())
+//                .load(linkGambar)
+//                .resize(image_height, image_width)
+//                .into(GambarIV);
+//        GambarIV.setLayoutParams(paramsJarakAntarEvent);
+//        rowLayout.addView(GambarIV);
+
+
+        // Make info component
+        TextView infoTV = new TextView(this);
+        String infoStr = "Nama: " + namaBarang;
+        infoTV.setText(infoStr);
+//        infoTV.setTextColor(defaultColor);
+        infoTV.setLayoutParams(marginVertical);
+//        infoTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
+        infoLayout.addView(infoTV);
+
+        infoTV = new TextView(this);
+        infoStr = "Jumlah beli: " + qty;
+        infoTV.setText(infoStr);
+        infoTV.setLayoutParams(marginVertical);
+        infoLayout.addView(infoTV);
+
+        infoTV = new TextView(this);
+        infoStr = "Total beli: " + sum;
+        infoTV.setText(infoStr);
+        infoTV.setLayoutParams(marginVertical);
+        infoLayout.addView(infoTV);
+
+        rowLayout.addView(infoLayout);
+
+
+        // Make delete button
+        Button delBtn = new Button(Belanja.this);
+        delBtn.setText("Hapus");
+        delBtn.setLayoutParams(marginHorizontal);
+        rowLayout.addView(delBtn);
+
+        delBtn.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                }
+        );
+
+
+
+        // Make change button
+        Button chgBtn = new Button(Belanja.this);
+        chgBtn.setText("Ubah");
+        chgBtn.setLayoutParams(marginHorizontal);
+        rowLayout.addView(chgBtn);
+
+        chgBtn.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
+
+                        // Setting Dialog Title
+                        alertDialog2.setTitle("Masukkan Jumlah");
+
+                        // Setting Dialog Message
+                        alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
+                        final EditText input = new EditText(Belanja.this);
+                        alertDialog2.setView(input);
+
+                        // Setting Positive "Yes" Btn
+                        alertDialog2.setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // cek cursaldo - (qty x harga) > 0
+                                        if ((curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga) > 0) && (stok > Integer.parseInt(String.valueOf(input.getText())))) {
+                                            Log.d("saldo",String.valueOf(saldo));
+                                            curSaldo  = curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga);
+                                            Log.d("cursaldo",String.valueOf(curSaldo));
+                                            if(namaBarang.contains(judul)){
+                                                qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
+                                            }
+                                            else{
+                                                qtyBarang.add(Integer.parseInt(String.valueOf(input.getText())) );
+                                                namaBarang.add(judul);
+                                            }
+                                            Log.d("nama barangs",namaBarang.toString());
+                                            Log.d("qty barangs",qtyBarang.toString());
+                                        }else {
+                                            // Write your code here to execute after dialog
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Gagal Memroses", Toast.LENGTH_SHORT)
+                                                    .show();
+                                            alertDialog2.create().dismiss();
+                                        }
+                                    }
+                                });
+
+                        // Setting Negative "NO" Btn
+                        alertDialog2.setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Write your code here to execute after dialog
+                                        Toast.makeText(getApplicationContext(),
+                                                "Pembelian Dibatalkan", Toast.LENGTH_SHORT)
+                                                .show();
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        // Showing Alert Dialog
+                        alertDialog2.show();
+                    }
+                }
+        );
+
+
+        // Attack rowLayout to mainLayout
+        scrollViewLayout.addView(rowLayout);
+    }
+
+    // Fungsi untuk generate komponen-komponen tampilan
+    public void generateUI2 (final String judul, final int harga, final int stok, String linkGambar) {
         Display display = getWindowManager().getDefaultDisplay();
         int image_width = display.getWidth()/3;
         int image_height = (int) (display.getHeight()/4.3);
@@ -306,7 +582,7 @@ public class Belanja extends ActionBarActivity {
                         alertDialog2.setView(input);
 
                         // Setting Positive "Yes" Btn
-                        alertDialog2.setPositiveButton("OK",
+                        alertDialog2.setPositiveButton("Tambahkan",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         // cek cursaldo - (qty x harga) > 0
@@ -329,13 +605,13 @@ public class Belanja extends ActionBarActivity {
                                                     "Gagal Memroses", Toast.LENGTH_SHORT)
                                                     .show();
                                             alertDialog2.create().dismiss();
-
                                         }
+
                                     }
                                 });
 
                         // Setting Negative "NO" Btn
-                        alertDialog2.setNegativeButton("Cancel",
+                        alertDialog2.setNegativeButton("Batal",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         // Write your code here to execute after dialog
@@ -369,6 +645,8 @@ public class Belanja extends ActionBarActivity {
         }
         return haveConnectedWifi || haveConnectedMobile;
     }
+
+    public void lanjutBelanja() {}
 
     class Viewer extends AsyncTask<String, String, String> {
 
@@ -423,7 +701,11 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            setUpLayout();
+//            setUpLayout();
+
+            scrollViewLayout = new LinearLayout(Belanja.this);
+//            scrollViewLayout = (LinearLayout) findViewById(R.id.scrollview_layout);
+            scrollViewLayout.setOrientation(LinearLayout.VERTICAL);
 
             for (int i=0;i<arrRes.length();i++){
                 JSONObject res = null;
@@ -440,16 +722,37 @@ public class Belanja extends ActionBarActivity {
                     e.printStackTrace();
                 }
 
-                if (i != arrRes.length()) {
-                    rowLayout.addView(colLayout);
-                    myLinearLayout.addView(rowLayout);
-                    rowLayout = new LinearLayout(Belanja.this);
-                    colLayout = new LinearLayout(Belanja.this);
-                    colLayout.setOrientation(LinearLayout.VERTICAL);
-                    subRowLayout = new LinearLayout(Belanja.this);
-                }
+//                if (i != arrRes.length()) {
+//                    // Search scroll view 'daftar belanja'
+//                    ScrollView daftarBelanjaSV = (ScrollView) findViewById(R.id.scrollview_listbelanja);
+//                    daftarBelanjaSV.addView(scrollViewLayout);
+//
+////                    rowLayout.addView(colLayout);
+////                    myLinearLayout.addView(rowLayout);
+////                    rowLayout = new LinearLayout(Belanja.this);
+////                    colLayout = new LinearLayout(Belanja.this);
+////                    colLayout.setOrientation(LinearLayout.VERTICAL);
+////                    subRowLayout = new LinearLayout(Belanja.this);
+//                }
 
             }
+
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+            generateUI("lalallalal",2444,234,"");
+
+
+
+            // Search scroll view 'daftar belanja'
+            ScrollView daftarBelanjaSV = (ScrollView) findViewById(R.id.scrollview_listbelanja);
+            daftarBelanjaSV.addView(scrollViewLayout);
 
 
         }
