@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -14,11 +16,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -61,6 +67,7 @@ public class Riwayat extends ActionBarActivity {
     int saldo = 0;
     int id = 0;
     String nama = null;
+    String namabarang = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +123,7 @@ public class Riwayat extends ActionBarActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         reqtype=5;
+                        namabarang= String.valueOf(input.getText());
 
                         Viewer v = new Viewer();
                         v.execute();
@@ -140,9 +148,97 @@ public class Riwayat extends ActionBarActivity {
     }
 
     public void waktuClicked(View v){
+        LinearLayout aLinearLayout = (LinearLayout) findViewById(R.id.container_tigabutton);
 
+        Button dailyBtn = new Button(Riwayat.this);
+        dailyBtn.setText("Daily");
+//        weeklyBtn.setLayoutParams(marginHorizontal);
+        aLinearLayout.addView(dailyBtn);
+
+        Button weeklyBtn = new Button(Riwayat.this);
+        weeklyBtn.setText("Weekly");
+//        weeklyBtn.setLayoutParams(marginHorizontal);
+        aLinearLayout.addView(weeklyBtn);
+
+        Button monthlyBtn = new Button(Riwayat.this);
+        monthlyBtn.setText("Monthly");
+//        weeklyBtn.setLayoutParams(marginHorizontal);
+        aLinearLayout.addView(monthlyBtn);
     }
 
+    public void harianClicked(View v){
+        reqtype = 1;
+        Viewer vi = new Viewer();
+        vi.execute();
+    }
+
+    public void mingguanClicked(View v){
+        reqtype = 2;
+
+        Viewer vi = new Viewer();
+        vi.execute();
+    }
+
+    public void bulananClicked(View v){
+        reqtype = 3;
+        Viewer vi = new Viewer();
+        vi.execute();
+    }
+
+    public void jangkaClicked(View v){
+        reqtype = 4;
+        final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
+
+        // Setting Dialog Title
+        alertDialog2.setTitle("Masukkan Nama Barang");
+
+        // Setting Dialog Message
+        DatePicker datePicker1 = new DatePicker(this);
+        DatePicker datePicker2 = new DatePicker(this);
+
+        alertDialog2.setView(datePicker1);
+
+        int day = datePicker1.getDayOfMonth();
+        int month = datePicker1.getMonth();
+        int year =  datePicker1.getYear();
+
+        datePicker1.setVisibility(View.GONE);
+
+        alertDialog2.setView(datePicker2);
+        int day2 = datePicker2.getDayOfMonth();
+        int month2 = datePicker2.getMonth();
+        int year2 =  datePicker2.getYear();
+
+        datePicker2.setVisibility(View.GONE);
+
+
+        // Setting Positive "Yes" Btn
+        alertDialog2.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Viewer v = new Viewer();
+                        v.execute();
+
+                    }
+                });
+
+        // Setting Negative "NO" Btn
+        alertDialog2.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to execute after dialog
+                        Toast.makeText(getApplicationContext(),
+                                "Pencarian Dibatalkan", Toast.LENGTH_SHORT)
+                                .show();
+                        dialog.cancel();
+                    }
+                });
+
+        // Showing Alert Dialog
+        alertDialog2.show();
+
+    }
     // Fungsi untuk menyiapkan layout tampilan
     public void setUpLayout(){
         myLinearLayout = (LinearLayout) findViewById(R.id.container_listriwayat);
@@ -179,16 +275,19 @@ public class Riwayat extends ActionBarActivity {
 
 //        int defaultColor = getResources().getColor(R.color.defaultFontColor);
 
+        linkGambar = "http://pos-fingerprint.herokuapp.com/asset/img/"+linkGambar;
+        Log.d("linkGambar",linkGambar);
+
         // Add image View
         ImageView GambarIV = new ImageView(this);
 
         // Loading image from below url into imageView
-//        Picasso.with(getActivity())
-//                .load(linkGambar)
-//                .resize(image_height, image_width)
-//                .into(GambarIV);
-//        GambarIV.setLayoutParams(paramsJarakAntarEvent);
-//        rowLayout.addView(GambarIV);
+        Picasso.with(this)
+                .load(linkGambar)
+                .resize(image_height, image_width)
+                .into(GambarIV);
+        GambarIV.setLayoutParams(paramsJarakAntarEvent);
+        rowLayout.addView(GambarIV);
 
         // Add text View TitleEventTV
         TitleEventTV = new TextView(this);
@@ -273,7 +372,7 @@ public class Riwayat extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
-            reqtype = 1;
+//            reqtype = 1;
         }
 
         @Override
@@ -282,8 +381,11 @@ public class Riwayat extends ActionBarActivity {
             String result = "";
             HttpClient client = new DefaultHttpClient();
             HttpGet request;
+            Log.d("reqtype", String.valueOf(reqtype));
             if (reqtype==5){
-                request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistorybarang?id="+id);
+                namabarang = namabarang.replace(" ","%20");
+                request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistorybarang?id="+id+"&nama="+namabarang);
+                Log.d("urlget","http://pos-fingerprint.herokuapp.com/api/gethistorybarang?id="+id+"&nama="+namabarang);
             }else{
                 request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
             }
@@ -299,11 +401,9 @@ public class Riwayat extends ActionBarActivity {
                 while ((line = rd.readLine()) != null) {
                     result += line;
                 }
-
                 try {
                     // Data
                     arrRes = new JSONArray(result);
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -336,7 +436,8 @@ public class Riwayat extends ActionBarActivity {
                    String tgl = res.getString("tanggal");
                     String nama = res.getString("nama");
                     int kuantitas = res.getInt("kuantitas");
-                    generateUI(tgl,nama,String.valueOf(kuantitas),"");
+                    String link = res.getString("icon");
+                    generateUI(tgl,nama,String.valueOf(kuantitas),link);
 
                 } catch (JSONException e) {
                     e.printStackTrace();

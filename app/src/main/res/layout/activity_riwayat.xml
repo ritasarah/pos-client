@@ -7,18 +7,50 @@
     tools:context="sarah.rita.pos_client.Riwayat">
 
     <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|center_vertical"
+        android:id="@+id/container_riwayatmaster">
+
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="left|center_vertical"
         android:id="@+id/container_listriwayat">
 
-        <Button
+        <!--Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Waktu"
             android:id="@+id/waktu"
-            android:onClick="waktuClicked"/>
+            android:onClick="waktuClicked"/-->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Harian"
+            android:id="@+id/harian"
+            android:onClick="harianClicked"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mingguan"
+            android:id="@+id/mingguan"
+            android:onClick="mingguanClicked"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bulanan"
+            android:id="@+id/bulanan"
+            android:onClick="bulananClicked"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jangka Hari"
+            android:id="@+id/jangka"
+            android:onClick="jangkaClicked"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -26,15 +58,22 @@
             android:text="Barang"
             android:id="@+id/barang"
             android:onClick="barangClicked"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="1017dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left|center_vertical"
+            android:id="@+id/container_tigabutton">
 
         <ScrollView
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_alignParentLeft="true"
             android:id="@+id/container_svriwayat">
 
         </ScrollView>
+        </LinearLayout>
+    </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

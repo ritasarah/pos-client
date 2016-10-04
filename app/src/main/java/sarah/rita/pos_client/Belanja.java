@@ -28,6 +28,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -244,12 +246,12 @@ public class Belanja extends ActionBarActivity {
         // Make component and attach to layout
 
         // Loading image from below url into imageView
-//        Picasso.with(getActivity())
-//                .load(linkGambar)
-//                .resize(image_height, image_width)
-//                .into(GambarIV);
-//        GambarIV.setLayoutParams(paramsJarakAntarEvent);
-//        rowLayout.addView(GambarIV);
+        Picasso.with(this)
+                .load(linkGambar)
+                .resize(image_height, image_width)
+                .into(GambarIV);
+        GambarIV.setLayoutParams(paramsJarakAntarEvent);
+        rowLayout.addView(GambarIV);
 
 
         // Make info component

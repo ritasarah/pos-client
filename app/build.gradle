@@ -10,6 +10,10 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    dependencies {
+        // Remote binary dependency
+        compile 'com.squareup.picasso:picasso:2.5.2'
+    }
     buildTypes {
         release {
             minifyEnabled false
