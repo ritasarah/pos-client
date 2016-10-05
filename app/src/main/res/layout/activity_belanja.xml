@@ -97,6 +97,13 @@
                     android:id="@+id/saldo_akhir" />
             </LinearLayout> <!-- End of Container text saldo akhir-->
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lanjut"
+                android:id="@+id/lanjut_belanja"
+                android:onClick="lanjutBelanja"/>
+
         </LinearLayout> <!-- End of container menampung belanjaan yang dibeli-->
 
     </LinearLayout> <!-- End of container utama -->
