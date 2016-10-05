@@ -75,12 +75,14 @@ public class Belanja extends ActionBarActivity {
         public int qtyDibeli;
         public long totalBeli;
         public String urlImage;
+        public int id;
 
-        public boughtObj(String _nama, int _qty, long _sum, String _url) {
+        public boughtObj(String _nama, int _qty, long _sum, String _url, int _id) {
             namaBarang = _nama;
             qtyDibeli = _qty;
             totalBeli = _sum;
             urlImage = _url;
+            id = _id;
         }
     }
 
@@ -265,7 +267,7 @@ public class Belanja extends ActionBarActivity {
                 .load(linkGambar)
                 .resize(image_height, image_width)
                 .into(GambarIV);
-        GambarIV.setLayoutParams(paramsJarakAntarEvent);
+        GambarIV.setLayoutParams(marginHorizontal);
         rowLayout.addView(GambarIV);
 
 
@@ -351,7 +353,7 @@ public class Belanja extends ActionBarActivity {
                                         productObj pO = new productObj(judul, linkGambar, stok, harga, id_produk);
                                         productObjList.add(pO);
 
-                                        boughtObj bO = new boughtObj(judul, qty, sum, linkGambar);
+                                        boughtObj bO = new boughtObj(judul, qty, sum, linkGambar, id_produk);
                                         boughObjList.add(bO);
 
 //                                        qtyBarang.add(qty);
@@ -694,7 +696,8 @@ public class Belanja extends ActionBarActivity {
                     int stok = res.getInt("stok");
                     int harga = res.getInt("harga");
                     int id_produk = res.getInt("id");
-                    generateUI(nama,harga,stok,"",id_produk);
+                    String url = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
+                    generateUI(nama,harga,stok,url,id_produk);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -714,14 +717,6 @@ public class Belanja extends ActionBarActivity {
 //                }
 
             }
-
-            generateUI("lalallalal",1000,2,"", 999);
-            generateUI("lalallalal",1000,2,"", 999);
-            generateUI("lalallalal",1000,2,"", 999);
-            generateUI("lalallalal",1000,2,"", 999);
-            generateUI("lalallalal",1000,2,"", 999);
-
-
 
             // Search scroll view 'daftar belanja'
             ScrollView daftarBelanjaSV = (ScrollView) findViewById(R.id.scrollview_listbelanja);
