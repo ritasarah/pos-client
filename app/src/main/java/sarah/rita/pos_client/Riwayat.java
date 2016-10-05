@@ -1,6 +1,7 @@
 package sarah.rita.pos_client;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -36,11 +37,13 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class Riwayat extends ActionBarActivity {
-    private LinearLayout myLinearLayout;
+    private ScrollView myLinearLayout;
     private TextView TitleEventTV;
     private TextView JudulEventTV;
     private TextView TitleTanggalTV;
@@ -64,7 +67,7 @@ public class Riwayat extends ActionBarActivity {
 
     int reqtype = 0;
 
-    int saldo = 0;
+    long saldo = 0;
     int id = 0;
     String nama = null;
     String namabarang = null;
@@ -79,7 +82,7 @@ public class Riwayat extends ActionBarActivity {
 
         if(b != null) {
             nama = b.getString("nama");
-            saldo = b.getInt("saldo");
+            saldo = b.getLong("saldo");
             id= b.getInt("id");
         }
 
@@ -147,24 +150,24 @@ public class Riwayat extends ActionBarActivity {
         alertDialog2.show();
     }
 
-    public void waktuClicked(View v){
-        LinearLayout aLinearLayout = (LinearLayout) findViewById(R.id.container_tigabutton);
-
-        Button dailyBtn = new Button(Riwayat.this);
-        dailyBtn.setText("Daily");
-//        weeklyBtn.setLayoutParams(marginHorizontal);
-        aLinearLayout.addView(dailyBtn);
-
-        Button weeklyBtn = new Button(Riwayat.this);
-        weeklyBtn.setText("Weekly");
-//        weeklyBtn.setLayoutParams(marginHorizontal);
-        aLinearLayout.addView(weeklyBtn);
-
-        Button monthlyBtn = new Button(Riwayat.this);
-        monthlyBtn.setText("Monthly");
-//        weeklyBtn.setLayoutParams(marginHorizontal);
-        aLinearLayout.addView(monthlyBtn);
-    }
+//    public void waktuClicked(View v){
+//        LinearLayout aLinearLayout = (LinearLayout) findViewById(R.id.container_tigabutton);
+//
+//        Button dailyBtn = new Button(Riwayat.this);
+//        dailyBtn.setText("Daily");
+////        weeklyBtn.setLayoutParams(marginHorizontal);
+//        aLinearLayout.addView(dailyBtn);
+//
+//        Button weeklyBtn = new Button(Riwayat.this);
+//        weeklyBtn.setText("Weekly");
+////        weeklyBtn.setLayoutParams(marginHorizontal);
+//        aLinearLayout.addView(weeklyBtn);
+//
+//        Button monthlyBtn = new Button(Riwayat.this);
+//        monthlyBtn.setText("Monthly");
+////        weeklyBtn.setLayoutParams(marginHorizontal);
+//        aLinearLayout.addView(monthlyBtn);
+//    }
 
     public void harianClicked(View v){
         reqtype = 1;
@@ -187,62 +190,43 @@ public class Riwayat extends ActionBarActivity {
 
     public void jangkaClicked(View v){
         reqtype = 4;
-        final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
+        final int from_year = 0, from_month = 0, from_day = 0,to_year = 0, to_month = 0, to_day = 0; //initialize them to current date in onStart()/onCreate()
+        DatePickerDialog.OnDateSetListener from_dateListener = null;
+        DatePickerDialog.OnDateSetListener to_dateListener = null;
+        Calendar c = Calendar.getInstance();
 
-        // Setting Dialog Title
-        alertDialog2.setTitle("Masukkan Nama Barang");
+        to_dateListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-        // Setting Dialog Message
-        DatePicker datePicker1 = new DatePicker(this);
-        DatePicker datePicker2 = new DatePicker(this);
+            }
+        };
 
-        alertDialog2.setView(datePicker1);
+        new DatePickerDialog(this, from_dateListener, from_year, from_month, from_day).show();
+        final DatePickerDialog.OnDateSetListener finalTo_dateListener = to_dateListener;
+        from_dateListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                new DatePickerDialog(Riwayat.this, finalTo_dateListener, to_year, to_month, to_day).show();
+            }
+        };
 
-        int day = datePicker1.getDayOfMonth();
-        int month = datePicker1.getMonth();
-        int year =  datePicker1.getYear();
-
-        datePicker1.setVisibility(View.GONE);
-
-        alertDialog2.setView(datePicker2);
-        int day2 = datePicker2.getDayOfMonth();
-        int month2 = datePicker2.getMonth();
-        int year2 =  datePicker2.getYear();
-
-        datePicker2.setVisibility(View.GONE);
-
-
-        // Setting Positive "Yes" Btn
-        alertDialog2.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        Viewer v = new Viewer();
-                        v.execute();
-
-                    }
-                });
-
-        // Setting Negative "NO" Btn
-        alertDialog2.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to execute after dialog
-                        Toast.makeText(getApplicationContext(),
-                                "Pencarian Dibatalkan", Toast.LENGTH_SHORT)
-                                .show();
-                        dialog.cancel();
-                    }
-                });
-
-        // Showing Alert Dialog
-        alertDialog2.show();
+//        Calendar c = Calendar.getInstance();
+//
+//        new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+//
+//            @Override
+//            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+//                // Do something here
+//
+//
+//            }
+//        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
 
     }
     // Fungsi untuk menyiapkan layout tampilan
     public void setUpLayout(){
-        myLinearLayout = (LinearLayout) findViewById(R.id.container_listriwayat);
-        myLinearLayout.setOrientation(LinearLayout.VERTICAL);
+        myLinearLayout = (ScrollView) findViewById(R.id.container_svriwayat);
         myLinearLayout.removeAllViews();
 
         // Add LayoutParams
