@@ -196,7 +196,19 @@ public class Riwayat extends ActionBarActivity {
 //                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 //                edittext.setText(sdf.format(myCalendar.getTime()));
 
-                String selected = Integer.toString(year) + "-" + Integer.toString(month+1) + "-" + Integer.toString(day);
+                String monthStr = "";
+                if (month+1 < 10)
+                    monthStr = "0" + Integer.toString(month+1);
+                else
+                    monthStr = Integer.toString(month+1);
+
+                String dayStr = "";
+                if (day < 10)
+                    dayStr = "0" + Integer.toString(day);
+                else
+                    dayStr = Integer.toString(day);
+
+                String selected = Integer.toString(year) + "-" + monthStr + "-" + dayStr;
                 dateFrom.setText(selected);
             }
         };
@@ -221,7 +233,19 @@ public class Riwayat extends ActionBarActivity {
                 myCalendar.set(Calendar.MONTH, month);
                 myCalendar.set(Calendar.DAY_OF_MONTH, day);
 
-                String selected = Integer.toString(year) + "-" + Integer.toString(month+1) + "-" + Integer.toString(day);
+                String monthStr = "";
+                if (month+1 < 10)
+                    monthStr = "0" + Integer.toString(month+1);
+                else
+                    monthStr = Integer.toString(month+1);
+
+                String dayStr = "";
+                if (day < 10)
+                    dayStr = "0" + Integer.toString(day);
+                else
+                    dayStr = Integer.toString(day);
+
+                String selected = Integer.toString(year) + "-" + monthStr + "-" + dayStr;
                 dateTo.setText(selected);
             }
         };
@@ -303,8 +327,8 @@ public class Riwayat extends ActionBarActivity {
 
     public void generateUI (String namaBarang, String tanggal, int qty, String linkGambar) {
         Display display = getWindowManager().getDefaultDisplay();
-        int image_width = display.getWidth()/3;
-        int image_height = (int) (display.getHeight()/4.3);
+        int image_width = display.getWidth()/5;
+        int image_height = (int) ((image_width*3)/4);
 
         // Define margins
         LinearLayout.LayoutParams marginVertical = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -324,6 +348,7 @@ public class Riwayat extends ActionBarActivity {
         Picasso.with(this)
                 .load(linkGambar)
                 .resize(image_height, image_width)
+                .centerInside()
                 .into(GambarIV);
         GambarIV.setLayoutParams(marginHorizontal);
         rowLayout.addView(GambarIV);
