@@ -423,7 +423,7 @@ public class Riwayat extends ActionBarActivity {
                     String nama = res.getString("nama");
                     int kuantitas = res.getInt("kuantitas");
                     String link = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
-                    generateUI(tgl,nama,kuantitas,link);
+                    generateUI(nama,tgl,kuantitas,link);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
