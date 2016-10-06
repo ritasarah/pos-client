@@ -31,15 +31,20 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -115,6 +120,7 @@ public class Belanja extends ActionBarActivity {
 
         Bundle b = getIntent().getExtras();
             if(b != null) {
+            id= b.getInt("id");
             nama = b.getString("nama");
             saldo = b.getLong("saldo");
             Log.d("saldo", String.valueOf(saldo));
@@ -616,7 +622,7 @@ public class Belanja extends ActionBarActivity {
         return haveConnectedWifi || haveConnectedMobile;
     }
 
-    public void lanjutBelanja() {
+    public void lanjutBelanja(View v) {
         // method ini dipanggil ketika button "lanjut belanja" di klik
         // udah ada list yg mengandung produk apa aja yg dibeli, yaitu boughtObjList
         // elemen dr boughObjList adl boughtObj, mengandung produk apa yg dibeli, brp jumlah belinya
@@ -625,6 +631,19 @@ public class Belanja extends ActionBarActivity {
         // eh kan perlu kirim id user juga ke server, id user dapet dr mana ya?
 
         // ada kelupaan: belom masukin id produk ke boughObj
+
+//        PostTask p = new PostTask();
+
+        for (int i =0;i<boughObjList.size();i++){
+            Poster p = new Poster(boughObjList.get(i).id,boughObjList.get(i).qtyDibeli);
+            p.execute();
+        }
+
+
+        PostSaldo po = new PostSaldo();
+        po.execute();
+
+
     }
 
     class Viewer extends AsyncTask<String, String, String> {
@@ -724,6 +743,191 @@ public class Belanja extends ActionBarActivity {
 
             ScrollView daftarBelanjaDibeliSV = (ScrollView) findViewById(R.id.scrollview_belanja);
             daftarBelanjaDibeliSV.addView(scrollViewBoughtLayout);
+        }
+    }
+
+    public class Poster extends AsyncTask<String, String, String> {
+        int id_barang;
+        int kuantitas;
+
+        Poster(int idbarang,int kuantita){
+            id_barang = idbarang;
+            kuantitas = kuantita;
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            //            if(isNetworkAvailable()) {
+            HttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
+            Log.d("req","http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
+            HttpResponse response;
+
+            try {
+                response = client.execute(request);
+
+                // Get the response
+//                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//
+//                try {
+//                    // Data
+//                    arrRes = new JSONArray(result);
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+//            } else {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getApplicationContext(), "Anda tidak terhubung ke internet", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            Log.d("kuantias", String.valueOf(kuantitas));
+
+        }
+    }
+
+    public class PostSaldo extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            //            if(isNetworkAvailable()) {
+            HttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/postsaldo?id="+id+"&saldo="+curSaldo);
+            HttpResponse response;
+
+            try {
+                response = client.execute(request);
+
+                // Get the response
+//                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//
+//                try {
+//                    // Data
+//                    arrRes = new JSONArray(result);
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+//            } else {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getApplicationContext(), "Anda tidak terhubung ke internet", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
+    }
+
+
+    public class PostTask extends AsyncTask<Void, Void, JSONObject> {
+        private final String TAG = "HttpClient";
+        private JSONObject result = null;
+
+        @Override
+        protected JSONObject doInBackground(Void... params) {
+            String sendMessage;
+
+            try {
+                DefaultHttpClient httpclient = new DefaultHttpClient();
+                HttpPost httpPostRequest = new HttpPost("http://pos-fingerprint.herokuapp.com/api/posthistory");
+
+                JSONObject sendObject = new JSONObject();
+                sendObject.put("id_user",1);
+                sendObject.put("id_barang",2);
+                sendObject.put("kuantitas",3);
+                sendMessage = sendObject.toString();
+
+                StringEntity se;
+                se = new StringEntity(sendMessage);
+
+                // Set HTTP parameters
+                httpPostRequest.setEntity(se);
+                httpPostRequest.setHeader("Accept", "application/json");
+                httpPostRequest.setHeader("Content-type", "application/json");
+
+                long t = System.currentTimeMillis();
+                HttpResponse response = (HttpResponse) httpclient.execute(httpPostRequest);
+                Log.i(TAG, "HTTPResponse received in [" + (System.currentTimeMillis() - t) + "ms]");
+
+                HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    // Read the content stream
+                    InputStream instream = entity.getContent();
+
+                    // convert content stream to a String
+                    String resultString = convertStreamToString(instream);
+                    instream.close();
+                    resultString = resultString.substring(1, resultString.length() - 1); // remove wrapping "[" and "]"
+
+                    JSONObject jsonObjRecv = new JSONObject(resultString);
+
+                    // Raw DEBUG output of our received JSON object:
+                    Log.i(TAG, "<JSONObject>\n" + jsonObjRecv.toString() + "\n</JSONObject>");
+
+                    return jsonObjRecv;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        private String convertStreamToString(InputStream is) {
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+
+            String line = null;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return sb.toString();
         }
     }
 
