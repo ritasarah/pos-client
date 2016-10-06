@@ -246,8 +246,8 @@ public class Belanja extends ActionBarActivity {
 
     public void generateUI (final String judul, final int harga, final int stok, final String linkGambar, final int id_produk) {
         Display display = getWindowManager().getDefaultDisplay();
-        int image_width = display.getWidth()/3;
-        int image_height = (int) (display.getHeight()/4.3);
+        int image_width = display.getWidth()/5;
+        int image_height = (int) ((image_width*3)/4);
 
         // Add image View
         ImageView GambarIV = new ImageView(this);
@@ -272,6 +272,7 @@ public class Belanja extends ActionBarActivity {
         Picasso.with(this)
                 .load(linkGambar)
                 .resize(image_height, image_width)
+                .centerInside()
                 .into(GambarIV);
         GambarIV.setLayoutParams(marginHorizontal);
         rowLayout.addView(GambarIV);
@@ -416,6 +417,10 @@ public class Belanja extends ActionBarActivity {
 //    public void addBoughtList(final String namaBarang, final int qty, String imageURL, final long sum) {
     public void addBoughtList() {
 
+        Display display = getWindowManager().getDefaultDisplay();
+        int image_width = display.getWidth()/6;
+        int image_height = (int) ((image_width*3)/4);
+
         for (int i=0; i<boughObjList.size(); i++) {
 
             final String namaBarang = boughObjList.get(i).namaBarang;
@@ -442,13 +447,14 @@ public class Belanja extends ActionBarActivity {
 
             // Make component and attach to layout
 
-            // Loading image from below url into imageView
-            //        Picasso.with(getActivity())
-            //                .load(linkGambar)
-            //                .resize(image_height, image_width)
-            //                .into(GambarIV);
-            //        GambarIV.setLayoutParams(paramsJarakAntarEvent);
-            //        rowLayout.addView(GambarIV);
+//            Loading image from below url into imageView
+            Picasso.with(this)
+                    .load(imageURL)
+                    .resize(image_height, image_width)
+                    .centerInside()
+                    .into(GambarIV);
+            GambarIV.setLayoutParams(marginHorizontal);
+            rowLayout.addView(GambarIV);
 
 
             // Make info component
