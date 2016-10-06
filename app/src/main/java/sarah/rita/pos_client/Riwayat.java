@@ -58,6 +58,8 @@ public class Riwayat extends ActionBarActivity {
     private LinearLayout scrollViewLayout;
     private ScrollView daftarHistoriSV;
     private Calendar myCalendar;
+    String dateawal;
+    String dateakhir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -312,12 +314,15 @@ public class Riwayat extends ActionBarActivity {
         EditText dateFrom = (EditText) findViewById(R.id.starttv);
         EditText dateTo = (EditText) findViewById(R.id.endtv);
 
-        String from = dateFrom.getText().toString();
-        String to = dateTo.getText().toString();
+        dateawal = dateFrom.getText().toString();
+        dateakhir = dateTo.getText().toString();
 
         Toast.makeText(getApplicationContext(),
-                "date from: " + from + ", date to: " + to, Toast.LENGTH_SHORT)
+                "date from: " + dateawal + ", date to: " + dateakhir, Toast.LENGTH_SHORT)
                 .show();
+
+        Viewer vi = new Viewer();
+        vi.execute();
     }
 
     private void clearSVLayout(){
@@ -397,7 +402,10 @@ public class Riwayat extends ActionBarActivity {
                 namabarang = namabarang.replace(" ","%20");
                 request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistorybarang?id="+id+"&nama="+namabarang);
                 Log.d("urlget","http://pos-fingerprint.herokuapp.com/api/gethistorybarang?id="+id+"&nama="+namabarang);
-            }else{
+            }else if (reqtype==4){
+                request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype+"&dateawal='"+dateawal+"'&dateakhir='"+dateakhir+"'");
+            }
+            else {
                 request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
             }
             HttpResponse response;
