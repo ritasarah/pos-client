@@ -38,39 +38,26 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 
 public class Riwayat extends ActionBarActivity {
-    private ScrollView myLinearLayout;
-    private TextView TitleEventTV;
-    private TextView JudulEventTV;
-    private TextView TitleTanggalTV;
-    private TextView JudulTanggalTV;
-    private TextView TitleWaktuTV;
-    private TextView JudulWaktuTV;
-    private TextView TitleKeteranganTV;
-    private TextView IsiKeteranganTV;
-    private Button SelengkapnyaBtn;
-    private LinearLayout.LayoutParams paramsJarakAntarEvent;
-    private LinearLayout.LayoutParams paramsJarakAntarIsi;
-    private LinearLayout.LayoutParams paramsJarakIsiDenganButton;
-    private LinearLayout rowLayout;
-    private LinearLayout colLayout;
-    private LinearLayout subRowLayout;
-
-    private ArrayList<String> judulSaved;
-    private ArrayList<String> tanggalSaved;
-    private ArrayList<String> keteranganSaved;
-    private ArrayList<String> linkSaved;
+//    private ArrayList<String> judulSaved;
+//    private ArrayList<String> tanggalSaved;
+//    private ArrayList<String> keteranganSaved;
+//    private ArrayList<String> linkSaved;
 
     int reqtype = 0;
-
     long saldo = 0;
     int id = 0;
     String nama = null;
     String namabarang = null;
+    private LinearLayout scrollViewLayout;
+    private ScrollView daftarHistoriSV;
+    private Calendar myCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +72,10 @@ public class Riwayat extends ActionBarActivity {
             saldo = b.getLong("saldo");
             id= b.getInt("id");
         }
-
+        scrollViewLayout = new LinearLayout(Riwayat.this);
+        scrollViewLayout.setOrientation(LinearLayout.VERTICAL);
+        daftarHistoriSV = (ScrollView) findViewById(R.id.container_svriwayat);
+        myCalendar = Calendar.getInstance();
     }
 
 
@@ -170,46 +160,115 @@ public class Riwayat extends ActionBarActivity {
 //    }
 
     public void harianClicked(View v){
+        clearSVLayout();
         reqtype = 1;
         Viewer vi = new Viewer();
         vi.execute();
     }
 
     public void mingguanClicked(View v){
+        clearSVLayout();
         reqtype = 2;
-
         Viewer vi = new Viewer();
         vi.execute();
     }
 
     public void bulananClicked(View v){
+        clearSVLayout();
         reqtype = 3;
         Viewer vi = new Viewer();
         vi.execute();
     }
 
+    private void setUpDatePicker() {
+        final EditText dateFrom = (EditText) findViewById(R.id.starttv);
+        final EditText dateTo = (EditText) findViewById(R.id.endtv);
+
+        final DatePickerDialog.OnDateSetListener dateDialogFrom = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, day);
+
+//                String myFormat = "YYYY/MM/DD"; //In which you need put here
+//                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+//                edittext.setText(sdf.format(myCalendar.getTime()));
+
+                String selected = Integer.toString(year) + "-" + Integer.toString(month+1) + "-" + Integer.toString(day);
+                dateFrom.setText(selected);
+            }
+        };
+
+        dateFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(Riwayat.this,
+                                     dateDialogFrom,
+                                     myCalendar.get(Calendar.YEAR),
+                                     myCalendar.get(Calendar.MONTH),
+                                     myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        final DatePickerDialog.OnDateSetListener dateDialogTo = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, day);
+
+                String selected = Integer.toString(year) + "-" + Integer.toString(month+1) + "-" + Integer.toString(day);
+                dateTo.setText(selected);
+            }
+        };
+
+        dateTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(Riwayat.this,
+                                     dateDialogTo,
+                                     myCalendar.get(Calendar.YEAR),
+                                     myCalendar.get(Calendar.MONTH),
+                                     myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+
     public void jangkaClicked(View v){
+        clearSVLayout();
+        LinearLayout jangkaBtnLayout = (LinearLayout) findViewById(R.id.container_jangkaet);
+        jangkaBtnLayout.setVisibility(View.VISIBLE);
+        setUpDatePicker();
+
         reqtype = 4;
-        final int from_year = 0, from_month = 0, from_day = 0,to_year = 0, to_month = 0, to_day = 0; //initialize them to current date in onStart()/onCreate()
-        DatePickerDialog.OnDateSetListener from_dateListener = null;
-        DatePickerDialog.OnDateSetListener to_dateListener = null;
-        Calendar c = Calendar.getInstance();
 
-        to_dateListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+//        final int from_year = 0, from_month = 0, from_day = 0,to_year = 0, to_month = 0, to_day = 0; //initialize them to current date in onStart()/onCreate()
+//        DatePickerDialog.OnDateSetListener from_dateListener = null;
+//        DatePickerDialog.OnDateSetListener to_dateListener = null;
+//        Calendar c = Calendar.getInstance();
+//
+//        to_dateListener = new DatePickerDialog.OnDateSetListener() {
+//            @Override
+//            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+//
+//            }
+//        };
+//
+//        new DatePickerDialog(this, from_dateListener, from_year, from_month, from_day).show();
+//        final DatePickerDialog.OnDateSetListener finalTo_dateListener = to_dateListener;
+//        from_dateListener = new DatePickerDialog.OnDateSetListener() {
+//            @Override
+//            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+//                new DatePickerDialog(Riwayat.this, finalTo_dateListener, to_year, to_month, to_day).show();
+//            }
+//        };
 
-            }
-        };
 
-        new DatePickerDialog(this, from_dateListener, from_year, from_month, from_day).show();
-        final DatePickerDialog.OnDateSetListener finalTo_dateListener = to_dateListener;
-        from_dateListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                new DatePickerDialog(Riwayat.this, finalTo_dateListener, to_year, to_month, to_day).show();
-            }
-        };
 
 //        Calendar c = Calendar.getInstance();
 //
@@ -224,131 +283,74 @@ public class Riwayat extends ActionBarActivity {
 //        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
 
     }
-    // Fungsi untuk menyiapkan layout tampilan
-    public void setUpLayout(){
-        myLinearLayout = (ScrollView) findViewById(R.id.container_svriwayat);
-        myLinearLayout.removeAllViews();
 
-        // Add LayoutParams
-        paramsJarakAntarEvent = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsJarakAntarEvent.setMargins(0, 15, 20, 0);
+    public void cariHistoriDariJarak(View v) {
+        EditText dateFrom = (EditText) findViewById(R.id.starttv);
+        EditText dateTo = (EditText) findViewById(R.id.endtv);
 
-        paramsJarakAntarIsi = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsJarakAntarIsi.setMargins(5, 0, 0, 0);
+        String from = dateFrom.getText().toString();
+        String to = dateTo.getText().toString();
 
-        paramsJarakIsiDenganButton = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        paramsJarakIsiDenganButton.setMargins(5, 5, 0, 15);
-
-        rowLayout = new LinearLayout(this);
-        rowLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-        // Buat linear layout vertical untuk menampung kata-kata
-        colLayout = new LinearLayout(this);
-        colLayout.setOrientation(LinearLayout.VERTICAL);
-        colLayout.setPadding(0, 10, 10, 0);
-
-        subRowLayout = new LinearLayout(this);
-        subRowLayout.setOrientation(LinearLayout.HORIZONTAL);
+        Toast.makeText(getApplicationContext(),
+                "date from: " + from + ", date to: " + to, Toast.LENGTH_SHORT)
+                .show();
     }
 
-    // Fungsi untuk generate komponen-komponen tampilan
-    public void generateUI (String judul, String tanggal, String keterangan, String linkGambar) {
+    private void clearSVLayout(){
+        scrollViewLayout.removeAllViews();
+        daftarHistoriSV.removeAllViews();
+    }
+
+    public void generateUI (String namaBarang, String tanggal, int qty, String linkGambar) {
         Display display = getWindowManager().getDefaultDisplay();
         int image_width = display.getWidth()/3;
         int image_height = (int) (display.getHeight()/4.3);
 
-//        int defaultColor = getResources().getColor(R.color.defaultFontColor);
+        // Define margins
+        LinearLayout.LayoutParams marginVertical = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        marginVertical.setMargins(5, 0, 0, 0);
+        LinearLayout.LayoutParams marginHorizontal = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        marginHorizontal.setMargins(0, 5, 0, 0);
 
-        linkGambar = "http://pos-fingerprint.herokuapp.com/asset/img/"+linkGambar;
-        Log.d("linkGambar",linkGambar);
+        // Define layout
+        LinearLayout rowLayout = new LinearLayout(this);
+        rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout infoLayout = new LinearLayout(this);
+        infoLayout.setOrientation(LinearLayout.VERTICAL);
 
         // Add image View
         ImageView GambarIV = new ImageView(this);
-
         // Loading image from below url into imageView
         Picasso.with(this)
                 .load(linkGambar)
                 .resize(image_height, image_width)
                 .into(GambarIV);
-        GambarIV.setLayoutParams(paramsJarakAntarEvent);
+        GambarIV.setLayoutParams(marginHorizontal);
         rowLayout.addView(GambarIV);
 
-        // Add text View TitleEventTV
-        TitleEventTV = new TextView(this);
-        TitleEventTV.setText("Tanggal : ");
-//        TitleEventTV.setTextColor(defaultColor);
-        TitleEventTV.setLayoutParams(paramsJarakAntarIsi);
-//        TitleEventTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
-        subRowLayout.addView(TitleEventTV);
+        // Make info component
+        TextView infoTV = new TextView(this);
+        String infoStr = "Tanggal: " + tanggal;
+        infoTV.setText(infoStr);
+//        infoTV.setTextColor(defaultColor);
+        infoTV.setLayoutParams(marginVertical);
+//        infoTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
+        infoLayout.addView(infoTV);
 
-        // Add text View JudulEventTV
-        JudulEventTV = new TextView(this);
-        JudulEventTV.setText(judul);
-//        JudulEventTV.setTextColor(defaultColor);
-        JudulEventTV.setLayoutParams(paramsJarakAntarIsi);
+        infoTV = new TextView(this);
+        infoStr = "Beli: " + namaBarang;
+        infoTV.setText(infoStr);
+        infoTV.setLayoutParams(marginVertical);
+        infoLayout.addView(infoTV);
 
-        if (subRowLayout.getParent() != null) {
-            ((ViewGroup) subRowLayout.getParent()).removeView(subRowLayout);
-        }
+        infoTV = new TextView(this);
+        infoStr = "Jumlah dibeli: " + Integer.toString(qty);
+        infoTV.setText(infoStr);
+        infoTV.setLayoutParams(marginVertical);
+        infoLayout.addView(infoTV);
 
-        subRowLayout.addView(JudulEventTV);
-        colLayout.addView(subRowLayout);
-        subRowLayout = new LinearLayout(this);
-
-        // Add text View TitleTanggalTV
-        TitleTanggalTV = new TextView(this);
-        TitleTanggalTV.setText("Barang: ");
-//        TitleTanggalTV.setTextColor(defaultColor);
-//        TitleTanggalTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
-        TitleTanggalTV.setLayoutParams(paramsJarakAntarIsi);
-        subRowLayout.addView(TitleTanggalTV);
-
-        // Add text View JudulTanggalTV
-        JudulTanggalTV= new TextView(this);
-        JudulTanggalTV.setText(tanggal);
-//        JudulTanggalTV.setTextColor(defaultColor);
-        JudulTanggalTV.setLayoutParams(paramsJarakAntarIsi);
-        subRowLayout.addView(JudulTanggalTV);
-        colLayout.addView(subRowLayout);
-        subRowLayout = new LinearLayout(this);
-
-//        // Add text View TitleWaktuTV
-//        TitleWaktuTV = new TextView(this);
-//        TitleWaktuTV.setText("Waktu: ");
-////        TitleWaktuTV.setTextColor(defaultColor);
-////        TitleWaktuTV.setTextColor(getResources().getColor(R.color.defaultFontColor));
-//        TitleWaktuTV.setLayoutParams(paramsJarakAntarIsi);
-//        subRowLayout.addView(TitleWaktuTV);
-
-//        // Add text View JudulWaktuTV
-//        JudulWaktuTV = new TextView(this);
-//        JudulWaktuTV.setText(tanggal);
-////        JudulWaktuTV.setTextColor(defaultColor);
-//        JudulWaktuTV.setLayoutParams(paramsJarakAntarIsi);
-//        subRowLayout.addView(JudulWaktuTV);
-//        colLayout.addView(subRowLayout);
-//        subRowLayout = new LinearLayout(this);
-
-        // Add text View TitleKeteranganTV
-        TitleKeteranganTV = new TextView(this);
-        TitleKeteranganTV.setText("Kuantitas: ");
-//        TitleKeteranganTV.setTextColor(defaultColor);
-        TitleKeteranganTV.setLayoutParams(paramsJarakAntarIsi);
-        subRowLayout.addView(TitleKeteranganTV);
-
-        // Add text View IsiKeteranganTV
-        IsiKeteranganTV = new TextView(this);
-        if (keterangan.length() > 80) {
-            keterangan = keterangan.substring(0, 80);
-            keterangan = keterangan + "...";
-        }
-        IsiKeteranganTV.setText(keterangan);
-//        IsiKeteranganTV.setTextColor(defaultColor);
-        IsiKeteranganTV.setLayoutParams(paramsJarakAntarIsi);
-        subRowLayout.addView(IsiKeteranganTV);
-        colLayout.addView(subRowLayout);
-        subRowLayout = new LinearLayout(this);
-
+        rowLayout.addView(infoLayout);
+        scrollViewLayout.addView(rowLayout);
     }
 
     class Viewer extends AsyncTask<String, String, String> {
@@ -409,7 +411,7 @@ public class Riwayat extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            setUpLayout();
+//            setUpLayout();
 
             for (int i=0;i<arrRes.length();i++){
                 JSONObject res = null;
@@ -417,27 +419,27 @@ public class Riwayat extends ActionBarActivity {
                     res = (JSONObject) arrRes.get(i);
                     Log.d("json oj",res.toString());
 
-                   String tgl = res.getString("tanggal");
+                    String tgl = res.getString("tanggal");
                     String nama = res.getString("nama");
                     int kuantitas = res.getInt("kuantitas");
-                    String link = res.getString("icon");
-                    generateUI(tgl,nama,String.valueOf(kuantitas),link);
+                    String link = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
+                    generateUI(tgl,nama,kuantitas,link);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                if (i != arrRes.length()) {
-                    rowLayout.addView(colLayout);
-                    myLinearLayout.addView(rowLayout);
-                    rowLayout = new LinearLayout(Riwayat.this);
-                    colLayout = new LinearLayout(Riwayat.this);
-                    colLayout.setOrientation(LinearLayout.VERTICAL);
-                    subRowLayout = new LinearLayout(Riwayat.this);
-                }
+//                if (i != arrRes.length()) {
+//                    rowLayout.addView(colLayout);
+//                    myLinearLayout.addView(rowLayout);
+//                    rowLayout = new LinearLayout(Riwayat.this);
+//                    colLayout = new LinearLayout(Riwayat.this);
+//                    colLayout.setOrientation(LinearLayout.VERTICAL);
+//                    subRowLayout = new LinearLayout(Riwayat.this);
+//                }
 
             }
-
+            daftarHistoriSV.addView(scrollViewLayout);
         }
     }
 }

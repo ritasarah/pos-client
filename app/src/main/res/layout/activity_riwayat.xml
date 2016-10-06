@@ -69,21 +69,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
+            android:visibility="gone"
             android:id="@+id/container_jangkaet">
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:id="@+id/starttv"
-                android:layout_marginTop="61dp"
+                android:focusable="false"
                 android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text=" to "/>
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:id="@+id/endtv"
-                android:layout_marginTop="61dp"
+                android:focusable="false"
                 android:layout_centerHorizontal="true" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cari"
+                android:id="@+id/jarakBtn"
+                android:onClick="cariHistoriDariJarak"/>
         </LinearLayout> <!--end of layout range date from and to-->
 
         <ScrollView
