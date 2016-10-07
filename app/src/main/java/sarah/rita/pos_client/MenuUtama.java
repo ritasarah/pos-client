@@ -40,11 +40,12 @@ public class MenuUtama extends ActionBarActivity {
             nama= b.getString("nama");
         }
 
-        TextView hai = (TextView) findViewById(R.id.hai);
-        hai.append(nama);
+        if(nama!=null){
+            TextView hai = (TextView) findViewById(R.id.hai);
+            hai.append(nama);
+        }
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

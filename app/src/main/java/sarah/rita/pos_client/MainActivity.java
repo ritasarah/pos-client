@@ -69,8 +69,10 @@ public class MainActivity extends ActionBarActivity {
         EditText idET = (EditText) findViewById(R.id.idtv);
 
         try {
-            id = Integer.parseInt(URLEncoder.encode(String.valueOf(idET.getText()), "utf-8"));
-        } catch (UnsupportedEncodingException e) {
+            if(String.valueOf(idET.getText())!=null){
+                id = Integer.parseInt(URLEncoder.encode(String.valueOf(idET.getText()), "utf-8"));
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
