@@ -77,6 +77,8 @@ public class Riwayat extends ActionBarActivity {
             nama = b.getString("nama");
             saldo = b.getLong("saldo");
             id= b.getInt("id");
+
+            Log.d("id di riwayat ", String.valueOf(id));
         }
         scrollViewLayout = new LinearLayout(Riwayat.this);
         scrollViewLayout.setOrientation(LinearLayout.VERTICAL);
@@ -324,10 +326,10 @@ public class Riwayat extends ActionBarActivity {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 new DatePickerDialog(Riwayat.this,
-                                     dateDialogTo,
-                                     myCalendar.get(Calendar.YEAR),
-                                     myCalendar.get(Calendar.MONTH),
-                                     myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                        dateDialogTo,
+                        myCalendar.get(Calendar.YEAR),
+                        myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
     }
@@ -459,6 +461,7 @@ public class Riwayat extends ActionBarActivity {
             }
             else {
                 request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
+                Log.d("urget","http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
             }
             HttpResponse response;
 
@@ -475,6 +478,7 @@ public class Riwayat extends ActionBarActivity {
                 try {
                     // Data
                     arrRes = new JSONArray(result);
+                    Log.d("arres",result);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
