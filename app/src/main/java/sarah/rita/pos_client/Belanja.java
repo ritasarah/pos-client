@@ -97,7 +97,7 @@ public class Belanja extends ActionBarActivity {
     private LinearLayout scrollViewLayout;
     private LinearLayout scrollViewBoughtLayout;
 
-    int id = 0 ;
+    int id_user = 0 ;
     long saldo = 0;
     String nama = null;
     long curSaldo = 0;
@@ -121,7 +121,7 @@ public class Belanja extends ActionBarActivity {
 
         Bundle b = getIntent().getExtras();
             if(b != null) {
-            id= b.getInt("id");
+            id_user= b.getInt("id");
             nama = b.getString("nama");
             saldo = b.getLong("saldo");
             Log.d("saldo", String.valueOf(saldo));
@@ -331,7 +331,11 @@ public class Belanja extends ActionBarActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 int qty = 0;
-                                qty = Integer.parseInt(String.valueOf(input.getText())); // quantity barang yang hendak dibeli
+                                try{
+                                    qty = Integer.parseInt(String.valueOf(input.getText()));} // quantity barang yang hendak dibeli
+                                catch (Exception e){
+
+                                }
                                 int idx_produkDibeli = searchInBoughtList(judul);
                                 int stok_tersisa = 0;
                                 if (idx_produkDibeli > -1) //pernah beli barang itu sebelumnya
@@ -650,7 +654,7 @@ public class Belanja extends ActionBarActivity {
     public void backBelanjaClicked(View v) {
         Intent intent = new Intent(this, MenuUtama.class);
         Bundle b = new Bundle();
-        b.putInt("id", id); //Your id
+        b.putInt("id", id_user); //Your id
         b.putLong("saldo",curSaldo);
         b.putString("nama",nama);
         intent.putExtras(b); //Put your id to your next Intent
@@ -786,8 +790,8 @@ public class Belanja extends ActionBarActivity {
             String result = "";
 
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
-            Log.d("req","http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
+            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
+            Log.d("req","http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
             HttpResponse response;
 
             try {
@@ -840,7 +844,7 @@ public class Belanja extends ActionBarActivity {
             String message = null;
             String result = "";
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/postsaldo?id="+id+"&saldo="+curSaldo);
+            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/postsaldo?id="+id_user+"&saldo="+curSaldo);
             HttpResponse response;
 
             try {
@@ -887,7 +891,7 @@ public class Belanja extends ActionBarActivity {
                                 //do things
                                 Intent intent = new Intent(Belanja.this, MenuUtama.class);
                                 Bundle b = new Bundle();
-                                b.putInt("id", id); //Your id
+                                b.putInt("id", id_user); //Your id
                                 b.putLong("saldo",curSaldo);
                                 b.putString("nama",nama);
                                 intent.putExtras(b); //Put your id to your next Intent

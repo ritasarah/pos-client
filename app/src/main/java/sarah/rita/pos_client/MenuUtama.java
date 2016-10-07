@@ -38,6 +38,8 @@ public class MenuUtama extends ActionBarActivity {
             saldo = b.getLong("saldo");
             nik_ktp = b.getString("nik_ktp");
             nama= b.getString("nama");
+
+            Log.d("id di mnu utama", String.valueOf(id));
         }
 
         if(nama!=null){
@@ -52,6 +54,20 @@ public class MenuUtama extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_menu_utama, menu);
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Bundle b = getIntent().getExtras();
+
+        if(b != null) {
+            id= b.getInt("id");
+            nama = b.getString("nama");
+            saldo = b.getLong("saldo");
+            nama= b.getString("nama");
+        }
     }
 
     @Override
