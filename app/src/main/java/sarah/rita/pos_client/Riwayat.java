@@ -103,6 +103,7 @@ public class Riwayat extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
     public void barangClicked(View v){
+        clearSVLayout();
         final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
 
         // Setting Dialog Title
@@ -445,34 +446,41 @@ public class Riwayat extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
 //            setUpLayout();
+            if (arrRes.length() > 0) {
+                for (int i = 0; i < arrRes.length(); i++) {
+                    JSONObject res = null;
+                    try {
+                        res = (JSONObject) arrRes.get(i);
+                        Log.d("json oj", res.toString());
 
-            for (int i=0;i<arrRes.length();i++){
-                JSONObject res = null;
-                try {
-                    res = (JSONObject) arrRes.get(i);
-                    Log.d("json oj",res.toString());
+                        String tgl = res.getString("tanggal");
+                        String nama = res.getString("nama");
+                        int kuantitas = res.getInt("kuantitas");
+                        String link = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
+                        generateUI(nama, tgl, kuantitas, link);
 
-                    String tgl = res.getString("tanggal");
-                    String nama = res.getString("nama");
-                    int kuantitas = res.getInt("kuantitas");
-                    String link = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
-                    generateUI(nama,tgl,kuantitas,link);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-
-//                if (i != arrRes.length()) {
-//                    rowLayout.addView(colLayout);
-//                    myLinearLayout.addView(rowLayout);
-//                    rowLayout = new LinearLayout(Riwayat.this);
-//                    colLayout = new LinearLayout(Riwayat.this);
-//                    colLayout.setOrientation(LinearLayout.VERTICAL);
-//                    subRowLayout = new LinearLayout(Riwayat.this);
-//                }
-
+                daftarHistoriSV.addView(scrollViewLayout);
             }
-            daftarHistoriSV.addView(scrollViewLayout);
+            else {
+                final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
+                // Setting Dialog Title
+                alertDialog2.setTitle("Informasi");
+                // Setting Dialog Message
+                alertDialog2.setMessage("Tidak ada histori untuk pencarian tersebut");
+
+                // Setting Positive "Yes" Btn
+                alertDialog2.setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+
+                alertDialog2.show();
+            }
         }
     }
 }
