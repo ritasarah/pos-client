@@ -636,14 +636,20 @@ public class Belanja extends ActionBarActivity {
     }
 
     public void lanjutBelanja(View v) {
-        for (int i =0;i<boughObjList.size();i++){
-            Poster p = new Poster(boughObjList.get(i).id,boughObjList.get(i).qtyDibeli);
-            p.execute();
+        if (boughObjList.size() > 0) {
+            for (int i =0;i<boughObjList.size();i++){
+                Poster p = new Poster(boughObjList.get(i).id,boughObjList.get(i).qtyDibeli);
+                p.execute();
+            }
+
+            PostSaldo po = new PostSaldo();
+            po.execute();
         }
-
-        PostSaldo po = new PostSaldo();
-        po.execute();
-
+        else {
+            Toast.makeText(getApplicationContext(),
+                    "Silahkan masukkan pembelian terlebih dahulu", Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     public void backBelanjaClicked(View v) {
