@@ -133,24 +133,25 @@ public class Belanja extends ActionBarActivity {
             v.execute();
         }
         else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
-            builder.setMessage("Koneksi internet Anda bermasalah")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                        //do things
-                        Intent intent = new Intent(Belanja.this, MenuUtama.class);
-                        Bundle b = new Bundle();
-                        b.putInt("id", id); //Your id
-                        b.putLong("saldo",curSaldo);
-                        b.putString("nama",nama);
-                        intent.putExtras(b); //Put your id to your next Intent
-                        startActivity(intent);
-                        finish();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+//            AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+//            builder.setMessage("Koneksi internet Anda bermasalah")
+//                    .setCancelable(false)
+//                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                        //do things
+//                        Intent intent = new Intent(Belanja.this, MenuUtama.class);
+//                        Bundle b = new Bundle();
+//                        b.putInt("id", id); //Your id
+//                        b.putLong("saldo",curSaldo);
+//                        b.putString("nama",nama);
+//                        intent.putExtras(b); //Put your id to your next Intent
+//                        startActivity(intent);
+//                        finish();
+//                        }
+//                    });
+//            AlertDialog alert = builder.create();
+//            alert.show();
+            dialogNoInet();
         }
     }
 
@@ -191,35 +192,25 @@ public class Belanja extends ActionBarActivity {
         }
     }
 
-    // Fungsi untuk menyiapkan layout tampilan
-    public void setUpLayout(){
-//        myLinearLayout = (LinearLayout) findViewById(R.id.container_listbelanja);
-//        myLinearLayout.setOrientation(LinearLayout.VERTICAL);
-//        myLinearLayout.removeAllViews();
-//
-//        // Add LayoutParams
-//        paramsJarakAntarEvent = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        paramsJarakAntarEvent.setMargins(0, 15, 20, 0);
-//
-//        paramsJarakAntarIsi = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        paramsJarakAntarIsi.setMargins(5, 0, 0, 0);
-//
-//        paramsJarakIsiDenganButton = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//        paramsJarakIsiDenganButton.setMargins(5, 5, 0, 15);
-//
-//        rowLayout = new LinearLayout(this);
-//        rowLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-//        scrollViewLayout = new LinearLayout(this);
-//        scrollViewLayout.setOrientation(LinearLayout.VERTICAL);
-
-        // Buat linear layout vertical untuk menampung kata-kata
-//        colLayout = new LinearLayout(this);
-//        colLayout.setOrientation(LinearLayout.VERTICAL);
-//        colLayout.setPadding(0, 10, 10, 0);
-//
-//        subRowLayout = new LinearLayout(this);
-//        subRowLayout.setOrientation(LinearLayout.HORIZONTAL);
+    public void dialogNoInet() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+        builder.setMessage("Internet Anda bermasalah")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //do things
+                        Intent intent = new Intent(Belanja.this, MenuUtama.class);
+                        Bundle b = new Bundle();
+                        b.putInt("id", id_user); //Your id
+                        b.putLong("saldo", curSaldo);
+                        b.putString("nama", nama);
+                        intent.putExtras(b); //Put your id to your next Intent
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private int searchInBoughtList (String _nama) {
@@ -674,24 +665,25 @@ public class Belanja extends ActionBarActivity {
                 po.execute();
             }
             else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
-                builder.setMessage("Koneksi internet Anda bermasalah")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //do things
-                                Intent intent = new Intent(Belanja.this, MenuUtama.class);
-                                Bundle b = new Bundle();
-                                b.putInt("id", id); //Your id
-                                b.putLong("saldo",curSaldo);
-                                b.putString("nama",nama);
-                                intent.putExtras(b); //Put your id to your next Intent
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+//                builder.setMessage("Koneksi internet Anda bermasalah")
+//                        .setCancelable(false)
+//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                //do things
+//                                Intent intent = new Intent(Belanja.this, MenuUtama.class);
+//                                Bundle b = new Bundle();
+//                                b.putInt("id", id); //Your id
+//                                b.putLong("saldo",curSaldo);
+//                                b.putString("nama",nama);
+//                                intent.putExtras(b); //Put your id to your next Intent
+//                                startActivity(intent);
+//                                finish();
+//                            }
+//                        });
+//                AlertDialog alert = builder.create();
+//                alert.show();
+                dialogNoInet();
             }
         }
         else {
@@ -750,10 +742,12 @@ public class Belanja extends ActionBarActivity {
                         arrRes = new JSONArray(result);
 
                     } catch (JSONException e) {
+                        arrRes = new JSONArray();
                         e.printStackTrace();
                     }
 
                 } catch (Exception e) {
+                    arrRes = new JSONArray();
                     e.printStackTrace();
                 }
 //            } else {
@@ -794,20 +788,22 @@ public class Belanja extends ActionBarActivity {
                 }
             }
             else {
-                final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
-                // Setting Dialog Title
-                alertDialog2.setTitle("Informasi");
-                // Setting Dialog Message
-                alertDialog2.setMessage("Terdapat kesalahan, silakan ulangi kembali");
-
-                // Setting Positive "Yes" Btn
-                alertDialog2.setPositiveButton("OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-
-                alertDialog2.show();
+//                final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
+//                // Setting Dialog Title
+//                alertDialog2.setTitle("Informasi");
+//                // Setting Dialog Message
+//                alertDialog2.setMessage("Terdapat kesalahan, silakan ulangi kembali");
+//
+//                // Setting Positive "Yes" Btn
+//                alertDialog2.setPositiveButton("OK",
+//                    new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//
+//                        }
+//                    });
+//
+//                alertDialog2.show();
+                dialogNoInet();
             }
 
             // Search scroll view 'daftar belanja'
@@ -823,6 +819,7 @@ public class Belanja extends ActionBarActivity {
         int id_barang;
         int kuantitas;
         ProgressDialog progressDialog;
+        boolean sent = false;
 
         Poster(int idbarang,int kuantita){
             id_barang = idbarang;
@@ -846,6 +843,7 @@ public class Belanja extends ActionBarActivity {
 
             try {
                 response = client.execute(request);
+                sent = true;
 
 //                // Get the response
 //                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -876,6 +874,8 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            if (!sent)
+                Toast.makeText(getApplicationContext(), "Anda tidak terhubung ke internet", Toast.LENGTH_SHORT).show();
             Log.d("kuantias", String.valueOf(kuantitas));
         }
     }
@@ -890,7 +890,6 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            //            if(isNetworkAvailable()) {
             String message = null;
             String result = "";
             HttpClient client = new DefaultHttpClient();
@@ -907,12 +906,13 @@ public class Belanja extends ActionBarActivity {
                     while ((line = rd.readLine()) != null) {
                         result += line;
                     }
+                    JSONObject arrRes = new JSONObject(result);
+                    message = arrRes.getString("response");
+                    Log.d("message",message);
+
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                JSONObject arrRes = new JSONObject(result);
-                message = arrRes.getString("response");
-                Log.d("message",message);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -932,37 +932,59 @@ public class Belanja extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
             progressDialog.dismiss();
-            if(result.contains("success")){
-                AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
-                builder.setMessage("Pembelian berhasil dilakukan")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //do things
-                                Intent intent = new Intent(Belanja.this, MenuUtama.class);
-                                Bundle b = new Bundle();
-                                b.putInt("id", id_user); //Your id
-                                b.putLong("saldo",curSaldo);
-                                b.putString("nama",nama);
-                                intent.putExtras(b); //Put your id to your next Intent
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
+            if (result != null) {
+                if (result.contains("success")) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+                    builder.setMessage("Pembelian berhasil dilakukan")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //do things
+                                    Intent intent = new Intent(Belanja.this, MenuUtama.class);
+                                    Bundle b = new Bundle();
+                                    b.putInt("id", id_user); //Your id
+                                    b.putLong("saldo", curSaldo);
+                                    b.putString("nama", nama);
+                                    intent.putExtras(b); //Put your id to your next Intent
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+                    builder.setMessage("Pembelian gagal")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //do things
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
             }
-            else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
-                builder.setMessage("Pembelian gagal")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //do things
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
+            else {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+//                builder.setMessage("Internet Anda bermasalah")
+//                        .setCancelable(false)
+//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                //do things
+//                                Intent intent = new Intent(Belanja.this, MenuUtama.class);
+//                                Bundle b = new Bundle();
+//                                b.putInt("id", id_user); //Your id
+//                                b.putLong("saldo", curSaldo);
+//                                b.putString("nama", nama);
+//                                intent.putExtras(b); //Put your id to your next Intent
+//                                startActivity(intent);
+//                                finish();
+//                            }
+//                        });
+//                AlertDialog alert = builder.create();
+//                alert.show();
+                dialogNoInet();
             }
         }
     }

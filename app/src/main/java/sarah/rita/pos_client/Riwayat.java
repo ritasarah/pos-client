@@ -480,10 +480,12 @@ public class Riwayat extends ActionBarActivity {
                     arrRes = new JSONArray(result);
                     Log.d("arres",result);
                 } catch (JSONException e) {
+                    arrRes = new JSONArray();
                     e.printStackTrace();
                 }
 
             } catch (Exception e) {
+                arrRes = new JSONArray();
                 e.printStackTrace();
             }
 //            } else {
@@ -522,20 +524,21 @@ public class Riwayat extends ActionBarActivity {
                 daftarHistoriSV.addView(scrollViewLayout);
             }
             else {
-                final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
-                // Setting Dialog Title
-                alertDialog2.setTitle("Informasi");
-                // Setting Dialog Message
-                alertDialog2.setMessage("Tidak ada histori untuk pencarian tersebut");
-
-                // Setting Positive "Yes" Btn
-                alertDialog2.setPositiveButton("OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-
-                alertDialog2.show();
+//                final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
+//                // Setting Dialog Title
+//                alertDialog2.setTitle("Informasi");
+//                // Setting Dialog Message
+//                alertDialog2.setMessage("Tidak ada histori untuk pencarian tersebut");
+//
+//                // Setting Positive "Yes" Btn
+//                alertDialog2.setPositiveButton("OK",
+//                    new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                        }
+//                    });
+//
+//                alertDialog2.show();
+                dialogNoInet();
             }
         }
     }
