@@ -754,6 +754,8 @@ public class Belanja extends ActionBarActivity {
         @Override
         protected String doInBackground(String... params) {
             //            if(isNetworkAvailable()) {
+            String result = "";
+
             HttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
             Log.d("req","http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
@@ -763,15 +765,20 @@ public class Belanja extends ActionBarActivity {
                 response = client.execute(request);
 
                 // Get the response
-//                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-//
-//                try {
-//                    // Data
-//                    arrRes = new JSONArray(result);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+                String line = "";
+                while ((line = rd.readLine()) != null) {
+                    result += line;
+                }
+                try {
+                    // Data
+                    JSONObject arrRes = new JSONObject(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
 
             } catch (Exception e) {
                 e.printStackTrace();
