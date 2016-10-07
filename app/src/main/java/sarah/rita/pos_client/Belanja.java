@@ -325,12 +325,18 @@ public class Belanja extends ActionBarActivity {
                     final EditText input = new EditText(Belanja.this);
                     input.setInputType(InputType.TYPE_CLASS_NUMBER);
                     alertDialog2.setView(input);
+                    int qty = 0;
+                    try{
+                        qty = Integer.parseInt(String.valueOf(input.getText())); // quantity barang yang hendak dibeli
+                    }catch (Exception e){
+
+                    }
 
                     // Setting Positive "Yes" Btn
+                    final int finalQty = qty;
                     alertDialog2.setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                int qty = Integer.parseInt(String.valueOf(input.getText())); // quantity barang yang hendak dibeli
                                 int idx_produkDibeli = searchInBoughtList(judul);
                                 int stok_tersisa = 0;
                                 if (idx_produkDibeli > -1) //pernah beli barang itu sebelumnya
@@ -339,7 +345,7 @@ public class Belanja extends ActionBarActivity {
                                     stok_tersisa = stok;
 
                                 // cek cursaldo - (qty x harga) > 0
-                                if ((curSaldo - (qty * harga) >= 0) && (stok_tersisa >= qty)) {
+                                if ((curSaldo - (finalQty * harga) >= 0) && (stok_tersisa >= finalQty) &&(finalQty>0)) {
                                     Log.d("saldo",String.valueOf(saldo));
                                     Log.d("cursaldo",String.valueOf(curSaldo));
 
@@ -350,18 +356,18 @@ public class Belanja extends ActionBarActivity {
 //                                        qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
 //                                        qtyBarang.set(namaBarang.indexOf(judul),(qty));
                                         if (idx_produkDibeli > -1) {
-                                            boughObjList.get(idx_produkDibeli).qtyDibeli += qty;
-                                            boughObjList.get(idx_produkDibeli).totalBeli += Long.valueOf(qty * harga);
+                                            boughObjList.get(idx_produkDibeli).qtyDibeli += finalQty;
+                                            boughObjList.get(idx_produkDibeli).totalBeli += Long.valueOf(finalQty * harga);
                                         }
                                     }
                                     else{
-                                        Integer sumInt = qty * harga;
+                                        Integer sumInt = finalQty * harga;
                                         long sum = sumInt.longValue();
 
                                         productObj pO = new productObj(judul, linkGambar, stok, harga, id_produk);
                                         productObjList.add(pO);
 
-                                        boughtObj bO = new boughtObj(judul, qty, sum, linkGambar, id_produk);
+                                        boughtObj bO = new boughtObj(judul, finalQty, sum, linkGambar, id_produk);
                                         boughObjList.add(bO);
 
 //                                        qtyBarang.add(qty);
@@ -376,14 +382,14 @@ public class Belanja extends ActionBarActivity {
                                     addBoughtList();
                                     setInfoBeliSaldo();
                                 }
-                                else if (curSaldo - (qty * harga) < 0) {
+                                else if (curSaldo - (finalQty * harga) < 0) {
                                     // Write your code here to execute after dialog
                                     Toast.makeText(getApplicationContext(),
                                             "Saldo Anda tidak cukup", Toast.LENGTH_SHORT)
                                             .show();
                                     alertDialog2.create().dismiss();
                                 }
-                                else if (stok_tersisa < qty) {
+                                else if (stok_tersisa < finalQty) {
                                     // Write your code here to execute after dialog
                                     Toast.makeText(getApplicationContext(),
                                             "Stok barang tidak mencukupi", Toast.LENGTH_SHORT)

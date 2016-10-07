@@ -72,17 +72,18 @@ public class MainActivity extends ActionBarActivity {
         try {
             if(String.valueOf(idET.getText())!=null){
                 id = Integer.parseInt(URLEncoder.encode(String.valueOf(idET.getText()), "utf-8"));
+
+                Log.d("id", String.valueOf(id));
+                if (id>0) {
+                    Viewer viewer = new Viewer();
+                    viewer.execute();
+                }else {
+                    Toast.makeText(this, "Input ID " , Toast.LENGTH_LONG).show();
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        Log.d("id", String.valueOf(id));
-        if (id>0) {
-            Viewer viewer = new Viewer();
-            viewer.execute();
-        }else {
-            Toast.makeText(this, "Input ID " , Toast.LENGTH_LONG).show();
         }
 
     }
@@ -107,7 +108,7 @@ public class MainActivity extends ActionBarActivity {
     class Viewer extends AsyncTask<String, String, String> {
         String nik_ktp;
         long saldo;
-        String nama;
+        String nama=null;
         ProgressDialog progressDialog;
 
         @Override
@@ -165,15 +166,19 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
             progressDialog.dismiss();
-            Intent intent = new Intent(MainActivity.this, MenuUtama.class);
-            Bundle b = new Bundle();
-            b.putInt("id", id); //Your id
-            b.putLong("saldo",saldo);
-            b.putString("nik_ktp",nik_ktp);
-            b.putString("nama",nama);
-            intent.putExtras(b); //Put your id to your next Intent
-            startActivity(intent);
-            finish();
+            if(nama==null){
+                Toast.makeText(MainActivity.this, "ID tidak terdaftar / Cek koneksi internet" , Toast.LENGTH_LONG).show();
+            } else{
+                Intent intent = new Intent(MainActivity.this, MenuUtama.class);
+                Bundle b = new Bundle();
+                b.putInt("id", id); //Your id
+                b.putLong("saldo",saldo);
+                b.putString("nik_ktp",nik_ktp);
+                b.putString("nama",nama);
+                intent.putExtras(b); //Put your id to your next Intent
+                startActivity(intent);
+                finish();
+            }
         }
     }
 

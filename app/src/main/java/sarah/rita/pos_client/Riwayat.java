@@ -324,8 +324,12 @@ public class Riwayat extends ActionBarActivity {
         dateawal = dateFrom.getText().toString();
         dateakhir = dateTo.getText().toString();
 
-        Viewer vi = new Viewer();
-        vi.execute();
+        if((dateawal==null)||(dateakhir==null)){
+            Viewer vi = new Viewer();
+            vi.execute();
+        }else {
+            Toast.makeText(this, "Isi Jangka Waktu " , Toast.LENGTH_LONG).show();
+        }
     }
 
     private void clearSVLayout(){
