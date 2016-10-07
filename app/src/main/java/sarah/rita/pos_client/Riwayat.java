@@ -2,6 +2,7 @@ package sarah.rita.pos_client;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -104,6 +105,7 @@ public class Riwayat extends ActionBarActivity {
     }
     public void barangClicked(View v){
         clearSVLayout();
+        clearJangkaLayout();
         final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
 
         // Setting Dialog Title
@@ -164,6 +166,7 @@ public class Riwayat extends ActionBarActivity {
 
     public void harianClicked(View v){
         clearSVLayout();
+        clearJangkaLayout();
         reqtype = 1;
         Viewer vi = new Viewer();
         vi.execute();
@@ -171,6 +174,7 @@ public class Riwayat extends ActionBarActivity {
 
     public void mingguanClicked(View v){
         clearSVLayout();
+        clearJangkaLayout();
         reqtype = 2;
         Viewer vi = new Viewer();
         vi.execute();
@@ -178,6 +182,7 @@ public class Riwayat extends ActionBarActivity {
 
     public void bulananClicked(View v){
         clearSVLayout();
+        clearJangkaLayout();
         reqtype = 3;
         Viewer vi = new Viewer();
         vi.execute();
@@ -312,15 +317,12 @@ public class Riwayat extends ActionBarActivity {
     }
 
     public void cariHistoriDariJarak(View v) {
+        clearSVLayout();
         EditText dateFrom = (EditText) findViewById(R.id.starttv);
         EditText dateTo = (EditText) findViewById(R.id.endtv);
 
         dateawal = dateFrom.getText().toString();
         dateakhir = dateTo.getText().toString();
-
-        Toast.makeText(getApplicationContext(),
-                "date from: " + dateawal + ", date to: " + dateakhir, Toast.LENGTH_SHORT)
-                .show();
 
         Viewer vi = new Viewer();
         vi.execute();
@@ -329,6 +331,11 @@ public class Riwayat extends ActionBarActivity {
     private void clearSVLayout(){
         scrollViewLayout.removeAllViews();
         daftarHistoriSV.removeAllViews();
+    }
+
+    private void clearJangkaLayout() {
+        LinearLayout jangkaLayout = (LinearLayout) findViewById(R.id.container_jangkaet);
+        jangkaLayout.setVisibility(View.GONE);
     }
 
     public void generateUI (String namaBarang, String tanggal, int qty, String linkGambar) {
@@ -386,10 +393,12 @@ public class Riwayat extends ActionBarActivity {
 
     class Viewer extends AsyncTask<String, String, String> {
         JSONArray arrRes;
+        ProgressDialog progressDialog;
 
         @Override
         protected void onPreExecute() {
 //            reqtype = 1;
+            progressDialog = ProgressDialog.show(Riwayat.this, "Loading", "Harap tunggu sebentar..");
         }
 
         @Override
@@ -446,6 +455,7 @@ public class Riwayat extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
 //            setUpLayout();
+            progressDialog.dismiss();
             if (arrRes.length() > 0) {
                 for (int i = 0; i < arrRes.length(); i++) {
                     JSONObject res = null;

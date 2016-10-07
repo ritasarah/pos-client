@@ -1,5 +1,6 @@
 package sarah.rita.pos_client;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -105,9 +106,12 @@ public class MainActivity extends ActionBarActivity {
         String nik_ktp;
         long saldo;
         String nama;
+        ProgressDialog progressDialog;
 
         @Override
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(MainActivity.this, "Loading", "Harap tunggu sebentar..");
+        }
 
         @Override
         protected String doInBackground(String... params) {
@@ -158,6 +162,7 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            progressDialog.dismiss();
             Intent intent = new Intent(MainActivity.this, MenuUtama.class);
             Bundle b = new Bundle();
             b.putInt("id", id); //Your id

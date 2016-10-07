@@ -1,6 +1,7 @@
 package sarah.rita.pos_client;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -640,11 +641,12 @@ public class Belanja extends ActionBarActivity {
     }
 
     class Viewer extends AsyncTask<String, String, String> {
-
+//        ProgressDialog progressDialog;
         JSONArray arrRes;
 
         @Override
         protected void onPreExecute() {
+//            progressDialog = ProgressDialog.show(Belanja.this, "Loading", "Harap tunggu sebentar..");
             scrollViewLayout = new LinearLayout(Belanja.this);
             scrollViewLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -698,36 +700,42 @@ public class Belanja extends ActionBarActivity {
         protected void onPostExecute(String result) {
 //            setUpLayout();
 
-            for (int i=0;i<arrRes.length();i++){
-                JSONObject res = null;
-                try {
-                    res = (JSONObject) arrRes.get(i);
-                    Log.d("json oj",res.toString());
+//            if ((!Belanja.this.isFinishing()) && progressDialog != null)
+//                progressDialog.dismiss();
+            if (arrRes.length() > 0) {
+                for (int i=0;i<arrRes.length();i++) {
+                    JSONObject res = null;
+                    try {
+                        res = (JSONObject) arrRes.get(i);
+                        Log.d("json oj", res.toString());
 
-                    String nama = res.getString("nama");
-                    int stok = res.getInt("stok");
-                    int harga = res.getInt("harga");
-                    int id_produk = res.getInt("id");
-                    String url = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
-                    generateUI(nama,harga,stok,url,id_produk);
+                        String nama = res.getString("nama");
+                        int stok = res.getInt("stok");
+                        int harga = res.getInt("harga");
+                        int id_produk = res.getInt("id");
+                        String url = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
+                        generateUI(nama, harga, stok, url, id_produk);
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
+            }
+            else {
+                final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
+                // Setting Dialog Title
+                alertDialog2.setTitle("Informasi");
+                // Setting Dialog Message
+                alertDialog2.setMessage("Terdapat kesalahan, silakan ulangi kembali");
 
-//                if (i != arrRes.length()) {
-//                    // Search scroll view 'daftar belanja'
-//                    ScrollView daftarBelanjaSV = (ScrollView) findViewById(R.id.scrollview_listbelanja);
-//                    daftarBelanjaSV.addView(scrollViewLayout);
-//
-////                    rowLayout.addView(colLayout);
-////                    myLinearLayout.addView(rowLayout);
-////                    rowLayout = new LinearLayout(Belanja.this);
-////                    colLayout = new LinearLayout(Belanja.this);
-////                    colLayout.setOrientation(LinearLayout.VERTICAL);
-////                    subRowLayout = new LinearLayout(Belanja.this);
-//                }
+                // Setting Positive "Yes" Btn
+                alertDialog2.setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
 
+                alertDialog2.show();
             }
 
             // Search scroll view 'daftar belanja'
@@ -742,7 +750,7 @@ public class Belanja extends ActionBarActivity {
     public class Poster extends AsyncTask<String, String, String> {
         int id_barang;
         int kuantitas;
-
+        ProgressDialog progressDialog;
 
         Poster(int idbarang,int kuantita){
             id_barang = idbarang;
@@ -750,7 +758,9 @@ public class Belanja extends ActionBarActivity {
         }
 
         @Override
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(Belanja.this, "Loading", "Harap tunggu sebentar..");
+        }
 
         @Override
         protected String doInBackground(String... params) {
@@ -779,6 +789,7 @@ public class Belanja extends ActionBarActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            progressDialog.dismiss();
 //            } else {
 //                runOnUiThread(new Runnable() {
 //                    @Override
@@ -794,17 +805,15 @@ public class Belanja extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
             Log.d("kuantias", String.valueOf(kuantitas));
-
-
         }
     }
 
-
     public class PostSaldo extends AsyncTask<String, String, String> {
+        ProgressDialog progressDialog;
 
         @Override
         protected void onPreExecute() {
-
+            progressDialog = ProgressDialog.show(Belanja.this, "Loading", "Harap tunggu sebentar..");
         }
 
         @Override
@@ -850,6 +859,7 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            progressDialog.dismiss();
             if(result.contains("success")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
                 builder.setMessage("Pembelian berhasil dilakukan")
@@ -869,7 +879,6 @@ public class Belanja extends ActionBarActivity {
                         });
                 AlertDialog alert = builder.create();
                 alert.show();
-
             }
             else{
                 AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
@@ -885,7 +894,6 @@ public class Belanja extends ActionBarActivity {
             }
         }
     }
-
 
     public class PostTask extends AsyncTask<Void, Void, JSONObject> {
         private final String TAG = "HttpClient";
