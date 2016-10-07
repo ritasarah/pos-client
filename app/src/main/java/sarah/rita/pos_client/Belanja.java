@@ -774,6 +774,41 @@ public class Belanja extends ActionBarActivity {
                 try {
                     // Data
                     JSONObject arrRes = new JSONObject(result);
+                    String message = arrRes.getString("response");
+                    if(message.contains("success")){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+                        builder.setMessage("Pembelian berhasil dilakukan")
+                                .setCancelable(false)
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        //do things
+                                        Intent intent = new Intent(Belanja.this, MenuUtama.class);
+                                        Bundle b = new Bundle();
+                                        b.putInt("id", id); //Your id
+                                        b.putLong("saldo",saldo);
+                                        b.putString("nama",nama);
+                                        intent.putExtras(b); //Put your id to your next Intent
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+
+                    }
+                    else{
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+                        builder.setMessage("Pembelian gagal")
+                                .setCancelable(false)
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        //do things
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -799,28 +834,10 @@ public class Belanja extends ActionBarActivity {
         protected void onPostExecute(String result) {
             Log.d("kuantias", String.valueOf(kuantitas));
 
-            final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
-            // Setting Dialog Title
-            alertDialog2.setTitle("Informasi");
 
-            // Setting Dialog Message
-            alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
-            final EditText input = new EditText(Belanja.this);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER);
-            alertDialog2.setView(input);
-
-            // Setting Positive "Yes" Btn
-            alertDialog2.setPositiveButton("OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-
-            // Showing Alert Dialog
-            alertDialog2.show();
         }
     }
+    
 
     public class PostSaldo extends AsyncTask<String, String, String> {
 
