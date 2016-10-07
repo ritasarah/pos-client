@@ -324,7 +324,7 @@ public class Riwayat extends ActionBarActivity {
         dateawal = dateFrom.getText().toString();
         dateakhir = dateTo.getText().toString();
 
-        if((dateawal.isEmpty())||(dateakhir.isEmpty())){
+        if(dateawal.length()>2 && dateakhir.length()>2){
             Viewer vi = new Viewer();
             vi.execute();
         }else {
