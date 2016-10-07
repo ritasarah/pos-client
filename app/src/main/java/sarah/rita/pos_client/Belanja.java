@@ -743,6 +743,7 @@ public class Belanja extends ActionBarActivity {
         int id_barang;
         int kuantitas;
 
+
         Poster(int idbarang,int kuantita){
             id_barang = idbarang;
             kuantitas = kuantita;
@@ -764,56 +765,16 @@ public class Belanja extends ActionBarActivity {
             try {
                 response = client.execute(request);
 
-                // Get the response
-                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-                String line = "";
-                while ((line = rd.readLine()) != null) {
-                    result += line;
-                }
-                try {
-                    // Data
-                    JSONObject arrRes = new JSONObject(result);
-                    String message = arrRes.getString("response");
-                    if(message.contains("success")){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
-                        builder.setMessage("Pembelian berhasil dilakukan")
-                                .setCancelable(false)
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        //do things
-                                        Intent intent = new Intent(Belanja.this, MenuUtama.class);
-                                        Bundle b = new Bundle();
-                                        b.putInt("id", id); //Your id
-                                        b.putLong("saldo",saldo);
-                                        b.putString("nama",nama);
-                                        intent.putExtras(b); //Put your id to your next Intent
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-
-                    }
-                    else{
-                        AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
-                        builder.setMessage("Pembelian gagal")
-                                .setCancelable(false)
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        //do things
-                                    }
-                                });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
+//                // Get the response
+//                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//
+//                String line = "";
+//                while ((line = rd.readLine()) != null) {
+//                    result += line;
+//                }
+//                try {
+//                    // Data
+//                    JSONObject arrRes = new JSONObject(result);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -837,7 +798,7 @@ public class Belanja extends ActionBarActivity {
 
         }
     }
-    
+
 
     public class PostSaldo extends AsyncTask<String, String, String> {
 
@@ -849,25 +810,30 @@ public class Belanja extends ActionBarActivity {
         @Override
         protected String doInBackground(String... params) {
             //            if(isNetworkAvailable()) {
+            String message = null;
+            String result = "";
             HttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/postsaldo?id="+id+"&saldo="+curSaldo);
             HttpResponse response;
 
             try {
-                response = client.execute(request);
+                try {
+                    response = client.execute(request);
 
-                // Get the response
-//                BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-//
-//                try {
-//                    // Data
-//                    arrRes = new JSONArray(result);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
-            } catch (Exception e) {
+                    String line = "";
+                    while ((line = rd.readLine()) != null) {
+                        result += line;
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                JSONObject arrRes = new JSONObject(result);
+                message = arrRes.getString("response");
+                Log.d("message",message);
+
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 //            } else {
@@ -879,11 +845,44 @@ public class Belanja extends ActionBarActivity {
 //                });
 //            }
 
-            return "";
+            return message;
         }
 
         @Override
         protected void onPostExecute(String result) {
+            if(result.contains("success")){
+                AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+                builder.setMessage("Pembelian berhasil dilakukan")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //do things
+                                Intent intent = new Intent(Belanja.this, MenuUtama.class);
+                                Bundle b = new Bundle();
+                                b.putInt("id", id); //Your id
+                                b.putLong("saldo",curSaldo);
+                                b.putString("nama",nama);
+                                intent.putExtras(b); //Put your id to your next Intent
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            }
+            else{
+                AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+                builder.setMessage("Pembelian gagal")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //do things
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
         }
     }
 
