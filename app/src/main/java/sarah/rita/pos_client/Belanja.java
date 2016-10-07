@@ -646,6 +646,17 @@ public class Belanja extends ActionBarActivity {
 
     }
 
+    public void backBelanjaClicked(View v) {
+        Intent intent = new Intent(this, MenuUtama.class);
+        Bundle b = new Bundle();
+        b.putInt("id", id); //Your id
+        b.putLong("saldo",curSaldo);
+        b.putString("nama",nama);
+        intent.putExtras(b); //Put your id to your next Intent
+        startActivity(intent);
+        finish();
+    }
+
     class Viewer extends AsyncTask<String, String, String> {
 //        ProgressDialog progressDialog;
         JSONArray arrRes;
