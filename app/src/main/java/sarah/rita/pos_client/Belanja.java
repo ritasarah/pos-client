@@ -128,8 +128,30 @@ public class Belanja extends ActionBarActivity {
         }
         curSaldo=saldo;
 
-        Viewer v = new Viewer();
-        v.execute();
+        if (isConnectNetwork() && isNetworkAvailable()) {
+            Viewer v = new Viewer();
+            v.execute();
+        }
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+            builder.setMessage("Koneksi internet Anda bermasalah")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        //do things
+                        Intent intent = new Intent(Belanja.this, MenuUtama.class);
+                        Bundle b = new Bundle();
+                        b.putInt("id", id); //Your id
+                        b.putLong("saldo",curSaldo);
+                        b.putString("nama",nama);
+                        intent.putExtras(b); //Put your id to your next Intent
+                        startActivity(intent);
+                        finish();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
 
@@ -613,7 +635,7 @@ public class Belanja extends ActionBarActivity {
         scrollViewBoughtLayout.removeAllViews();
     }
 
-    public boolean isNetworkAvailable() {
+    public boolean isConnectNetwork() {
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
 
@@ -630,16 +652,44 @@ public class Belanja extends ActionBarActivity {
         return haveConnectedWifi || haveConnectedMobile;
     }
 
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
     public void lanjutBelanja(View v) {
         if(boughObjList.size() > 0 ){
-
-            for (int i =0;i<boughObjList.size();i++){
-                Poster p = new Poster(boughObjList.get(i).id,boughObjList.get(i).qtyDibeli);
-                p.execute();
-            }
+            if (isConnectNetwork() && isNetworkAvailable()) {
+                for (int i = 0; i < boughObjList.size(); i++) {
+                    Poster p = new Poster(boughObjList.get(i).id, boughObjList.get(i).qtyDibeli);
+                    p.execute();
+                }
                 PostSaldo po = new PostSaldo();
                 po.execute();
             }
+            else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
+                builder.setMessage("Koneksi internet Anda bermasalah")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //do things
+                                Intent intent = new Intent(Belanja.this, MenuUtama.class);
+                                Bundle b = new Bundle();
+                                b.putInt("id", id); //Your id
+                                b.putLong("saldo",curSaldo);
+                                b.putString("nama",nama);
+                                intent.putExtras(b); //Put your id to your next Intent
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        }
         else {
             Toast.makeText(getApplicationContext(),
                     "Silahkan masukkan pembelian terlebih dahulu", Toast.LENGTH_SHORT)

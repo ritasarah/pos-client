@@ -3,11 +3,14 @@ package sarah.rita.pos_client;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -103,46 +106,95 @@ public class Riwayat extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public boolean isConnectNetwork() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public void dialogNoInet() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Riwayat.this);
+        builder.setMessage("Koneksi internet Anda bermasalah")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //do things
+                        Intent intent = new Intent(Riwayat.this, MenuUtama.class);
+                        Bundle b = new Bundle();
+                        b.putInt("id", id); //Your id
+                        b.putLong("saldo",saldo);
+                        b.putString("nama",nama);
+                        intent.putExtras(b); //Put your id to your next Intent
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     public void barangClicked(View v){
-        clearSVLayout();
-        clearJangkaLayout();
-        final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
+        if (isConnectNetwork() && isNetworkAvailable()) {
+            clearSVLayout();
+            clearJangkaLayout();
+            final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Riwayat.this);
 
-        // Setting Dialog Title
-        alertDialog2.setTitle("Masukkan Nama Barang");
+            // Setting Dialog Title
+            alertDialog2.setTitle("Masukkan Nama Barang");
 
-        // Setting Dialog Message
-        alertDialog2.setMessage("Masukkan nama barang yang untuk mengetahui riwayat pembelian");
-        final EditText input = new EditText(Riwayat.this);
-        alertDialog2.setView(input);
+            // Setting Dialog Message
+            alertDialog2.setMessage("Masukkan nama barang yang untuk mengetahui riwayat pembelian");
+            final EditText input = new EditText(Riwayat.this);
+            alertDialog2.setView(input);
 
-        // Setting Positive "Yes" Btn
-        alertDialog2.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        reqtype=5;
-                        namabarang= String.valueOf(input.getText());
+            // Setting Positive "Yes" Btn
+            alertDialog2.setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            reqtype = 5;
+                            namabarang = String.valueOf(input.getText());
 
-                        Viewer v = new Viewer();
-                        v.execute();
+                            Viewer v = new Viewer();
+                            v.execute();
 
-                    }
-                });
+                        }
+                    });
 
-        // Setting Negative "NO" Btn
-        alertDialog2.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to execute after dialog
-                        Toast.makeText(getApplicationContext(),
-                                "Pencarian Dibatalkan", Toast.LENGTH_SHORT)
-                                .show();
-                        dialog.cancel();
-                    }
-                });
+            // Setting Negative "NO" Btn
+            alertDialog2.setNegativeButton("Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Write your code here to execute after dialog
+                            Toast.makeText(getApplicationContext(),
+                                    "Pencarian Dibatalkan", Toast.LENGTH_SHORT)
+                                    .show();
+                            dialog.cancel();
+                        }
+                    });
 
-        // Showing Alert Dialog
-        alertDialog2.show();
+            // Showing Alert Dialog
+            alertDialog2.show();
+        }
+        else dialogNoInet();
     }
 
 //    public void waktuClicked(View v){
@@ -165,27 +217,36 @@ public class Riwayat extends ActionBarActivity {
 //    }
 
     public void harianClicked(View v){
-        clearSVLayout();
-        clearJangkaLayout();
-        reqtype = 1;
-        Viewer vi = new Viewer();
-        vi.execute();
+        if (isConnectNetwork() && isNetworkAvailable()) {
+            clearSVLayout();
+            clearJangkaLayout();
+            reqtype = 1;
+            Viewer vi = new Viewer();
+            vi.execute();
+        }
+        else dialogNoInet();
     }
 
     public void mingguanClicked(View v){
-        clearSVLayout();
-        clearJangkaLayout();
-        reqtype = 2;
-        Viewer vi = new Viewer();
-        vi.execute();
+        if (isConnectNetwork() && isNetworkAvailable()) {
+            clearSVLayout();
+            clearJangkaLayout();
+            reqtype = 2;
+            Viewer vi = new Viewer();
+            vi.execute();
+        }
+        else dialogNoInet();
     }
 
     public void bulananClicked(View v){
-        clearSVLayout();
-        clearJangkaLayout();
-        reqtype = 3;
-        Viewer vi = new Viewer();
-        vi.execute();
+        if (isConnectNetwork() && isNetworkAvailable()) {
+            clearSVLayout();
+            clearJangkaLayout();
+            reqtype = 3;
+            Viewer vi = new Viewer();
+            vi.execute();
+        }
+        else dialogNoInet();
     }
 
     private void setUpDatePicker() {
@@ -276,60 +337,26 @@ public class Riwayat extends ActionBarActivity {
         LinearLayout jangkaBtnLayout = (LinearLayout) findViewById(R.id.container_jangkaet);
         jangkaBtnLayout.setVisibility(View.VISIBLE);
         setUpDatePicker();
-
         reqtype = 4;
-
-//        final int from_year = 0, from_month = 0, from_day = 0,to_year = 0, to_month = 0, to_day = 0; //initialize them to current date in onStart()/onCreate()
-//        DatePickerDialog.OnDateSetListener from_dateListener = null;
-//        DatePickerDialog.OnDateSetListener to_dateListener = null;
-//        Calendar c = Calendar.getInstance();
-//
-//        to_dateListener = new DatePickerDialog.OnDateSetListener() {
-//            @Override
-//            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//
-//            }
-//        };
-//
-//        new DatePickerDialog(this, from_dateListener, from_year, from_month, from_day).show();
-//        final DatePickerDialog.OnDateSetListener finalTo_dateListener = to_dateListener;
-//        from_dateListener = new DatePickerDialog.OnDateSetListener() {
-//            @Override
-//            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                new DatePickerDialog(Riwayat.this, finalTo_dateListener, to_year, to_month, to_day).show();
-//            }
-//        };
-
-
-
-//        Calendar c = Calendar.getInstance();
-//
-//        new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-//
-//            @Override
-//            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                // Do something here
-//
-//
-//            }
-//        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
-
     }
 
     public void cariHistoriDariJarak(View v) {
-        clearSVLayout();
-        EditText dateFrom = (EditText) findViewById(R.id.starttv);
-        EditText dateTo = (EditText) findViewById(R.id.endtv);
+        if (isConnectNetwork() && isNetworkAvailable()) {
+            clearSVLayout();
+            EditText dateFrom = (EditText) findViewById(R.id.starttv);
+            EditText dateTo = (EditText) findViewById(R.id.endtv);
 
-        dateawal = dateFrom.getText().toString();
-        dateakhir = dateTo.getText().toString();
+            dateawal = dateFrom.getText().toString();
+            dateakhir = dateTo.getText().toString();
 
-        if(dateawal.length()>2 && dateakhir.length()>2){
-            Viewer vi = new Viewer();
-            vi.execute();
-        }else {
-            Toast.makeText(this, "Isi Jangka Waktu " , Toast.LENGTH_LONG).show();
+            if (dateawal.length() > 2 && dateakhir.length() > 2) {
+                Viewer vi = new Viewer();
+                vi.execute();
+            } else {
+                Toast.makeText(this, "Isi Jangka Waktu ", Toast.LENGTH_LONG).show();
+            }
         }
+        else dialogNoInet();
     }
 
     private void clearSVLayout(){
