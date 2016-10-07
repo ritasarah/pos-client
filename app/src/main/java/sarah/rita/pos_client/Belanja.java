@@ -629,26 +629,13 @@ public class Belanja extends ActionBarActivity {
     }
 
     public void lanjutBelanja(View v) {
-        // method ini dipanggil ketika button "lanjut belanja" di klik
-        // udah ada list yg mengandung produk apa aja yg dibeli, yaitu boughtObjList
-        // elemen dr boughObjList adl boughtObj, mengandung produk apa yg dibeli, brp jumlah belinya
-
-        // rencananya, mungkin si boughtObjList bisa dikirim ke server untuk dicerna
-        // eh kan perlu kirim id user juga ke server, id user dapet dr mana ya?
-
-        // ada kelupaan: belom masukin id produk ke boughObj
-
-//        PostTask p = new PostTask();
-
         for (int i =0;i<boughObjList.size();i++){
             Poster p = new Poster(boughObjList.get(i).id,boughObjList.get(i).qtyDibeli);
             p.execute();
         }
 
-
         PostSaldo po = new PostSaldo();
         po.execute();
-
 
     }
 
@@ -759,13 +746,10 @@ public class Belanja extends ActionBarActivity {
         Poster(int idbarang,int kuantita){
             id_barang = idbarang;
             kuantitas = kuantita;
-
         }
 
         @Override
-        protected void onPreExecute() {
-
-        }
+        protected void onPreExecute() {}
 
         @Override
         protected String doInBackground(String... params) {
@@ -806,9 +790,28 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-
             Log.d("kuantias", String.valueOf(kuantitas));
 
+            final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
+            // Setting Dialog Title
+            alertDialog2.setTitle("Informasi");
+
+            // Setting Dialog Message
+            alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
+            final EditText input = new EditText(Belanja.this);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            alertDialog2.setView(input);
+
+            // Setting Positive "Yes" Btn
+            alertDialog2.setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+
+            // Showing Alert Dialog
+            alertDialog2.show();
         }
     }
 
