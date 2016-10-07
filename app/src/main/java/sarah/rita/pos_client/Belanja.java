@@ -723,7 +723,7 @@ public class Belanja extends ActionBarActivity {
 //            if(isNetworkAvailable()) {
                 String result = "";
                 HttpClient client = new DefaultHttpClient();
-                HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/getbarang");
+                HttpGet request = new HttpGet("http://pos-server-fp.herokuapp.com/api/getbarang");
                 HttpResponse response;
 
                 try {
@@ -779,7 +779,7 @@ public class Belanja extends ActionBarActivity {
                         int stok = res.getInt("stok");
                         int harga = res.getInt("harga");
                         int id_produk = res.getInt("id");
-                        String url = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
+                        String url = "http://pos-server-fp.herokuapp.com/asset/img/" + res.getString("icon");
                         generateUI(nama, harga, stok, url, id_produk);
 
                     } catch (JSONException e) {
@@ -837,8 +837,7 @@ public class Belanja extends ActionBarActivity {
             String result = "";
 
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
-            Log.d("req","http://pos-fingerprint.herokuapp.com/api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
+            HttpGet request = new HttpGet("http://pos-server-fp.herokuapp.com/api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
             HttpResponse response;
 
             try {
@@ -893,7 +892,7 @@ public class Belanja extends ActionBarActivity {
             String message = null;
             String result = "";
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/postsaldo?id="+id_user+"&saldo="+curSaldo);
+            HttpGet request = new HttpGet("http://pos-server-fp.herokuapp.com/api/postsaldo?id="+id_user+"&saldo="+curSaldo);
             HttpResponse response;
 
             try {
@@ -999,7 +998,7 @@ public class Belanja extends ActionBarActivity {
 
             try {
                 DefaultHttpClient httpclient = new DefaultHttpClient();
-                HttpPost httpPostRequest = new HttpPost("http://pos-fingerprint.herokuapp.com/api/posthistory");
+                HttpPost httpPostRequest = new HttpPost("http://pos-server-fp.herokuapp.com/api/posthistory");
 
                 JSONObject sendObject = new JSONObject();
                 sendObject.put("id_user",1);

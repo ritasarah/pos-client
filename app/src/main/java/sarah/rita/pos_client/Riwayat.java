@@ -454,14 +454,12 @@ public class Riwayat extends ActionBarActivity {
             Log.d("reqtype", String.valueOf(reqtype));
             if (reqtype==5){
                 namabarang = namabarang.replace(" ","%20");
-                request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistorybarang?id="+id+"&nama="+namabarang);
-                Log.d("urlget","http://pos-fingerprint.herokuapp.com/api/gethistorybarang?id="+id+"&nama="+namabarang);
+                request = new HttpGet("http://pos-server-fp.herokuapp.com/api/gethistorybarang?id="+id+"&nama="+namabarang);
             }else if (reqtype==4){
-                request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype+"&dateawal='"+dateawal+"'&dateakhir='"+dateakhir+"'");
+                request = new HttpGet("http://pos-server-fp.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype+"&dateawal='"+dateawal+"'&dateakhir='"+dateakhir+"'");
             }
             else {
-                request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
-                Log.d("urget","http://pos-fingerprint.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
+                request = new HttpGet("http://pos-server-fp.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
             }
             HttpResponse response;
 
@@ -514,7 +512,7 @@ public class Riwayat extends ActionBarActivity {
                         String tgl = res.getString("tanggal");
                         String nama = res.getString("nama");
                         int kuantitas = res.getInt("kuantitas");
-                        String link = "http://pos-fingerprint.herokuapp.com/asset/img/" + res.getString("icon");
+                        String link = "http://pos-server-fp.herokuapp.com/asset/img/" + res.getString("icon");
                         generateUI(nama, tgl, kuantitas, link);
 
                     } catch (JSONException e) {

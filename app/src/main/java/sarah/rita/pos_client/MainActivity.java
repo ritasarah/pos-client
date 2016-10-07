@@ -121,7 +121,7 @@ public class MainActivity extends ActionBarActivity {
 //            if(isNetworkAvailable()) {
                 String result = "";
                 HttpClient client = new DefaultHttpClient();
-                HttpGet request = new HttpGet("http://pos-fingerprint.herokuapp.com/api/getcredentials?id="+id);
+                HttpGet request = new HttpGet("http://pos-server-fp.herokuapp.com/api/getcredentials?id="+id);
                 HttpResponse response;
 
                 try {
