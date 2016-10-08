@@ -64,6 +64,9 @@ public class Riwayat extends ActionBarActivity {
     private Calendar myCalendar;
     String dateawal;
     String dateakhir;
+    String token = "";
+    String base_url = "http://pos-fingerprint.herokuapp.com/";
+//    String base_url = "http://pos-server-fp.herokuapp.com/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,7 @@ public class Riwayat extends ActionBarActivity {
 
         if(b != null) {
             nama = b.getString("nama");
+            token = b.getString("token");
             saldo = b.getLong("saldo");
             id= b.getInt("id");
 
@@ -454,12 +458,12 @@ public class Riwayat extends ActionBarActivity {
             Log.d("reqtype", String.valueOf(reqtype));
             if (reqtype==5){
                 namabarang = namabarang.replace(" ","%20");
-                request = new HttpGet("http://pos-server-fp.herokuapp.com/api/gethistorybarang?id="+id+"&nama="+namabarang);
+                request = new HttpGet(base_url + "api/gethistorybarang?id="+id+"&nama="+namabarang+"&token="+token);
             }else if (reqtype==4){
-                request = new HttpGet("http://pos-server-fp.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype+"&dateawal='"+dateawal+"'&dateakhir='"+dateakhir+"'");
+                request = new HttpGet(base_url + "api/gethistory?id="+id+"&reqtype="+reqtype+"&dateawal='"+dateawal+"'&dateakhir='"+dateakhir+"'"+"&token="+token);
             }
             else {
-                request = new HttpGet("http://pos-server-fp.herokuapp.com/api/gethistory?id="+id+"&reqtype="+reqtype);
+                request = new HttpGet(base_url + "api/gethistory?id="+id+"&reqtype="+reqtype+"&token="+token);
             }
             HttpResponse response;
 
@@ -512,7 +516,7 @@ public class Riwayat extends ActionBarActivity {
                         String tgl = res.getString("tanggal");
                         String nama = res.getString("nama");
                         int kuantitas = res.getInt("kuantitas");
-                        String link = "http://pos-server-fp.herokuapp.com/asset/img/" + res.getString("icon");
+                        String link = base_url + "asset/img/" + res.getString("icon");
                         generateUI(nama, tgl, kuantitas, link);
 
                     } catch (JSONException e) {

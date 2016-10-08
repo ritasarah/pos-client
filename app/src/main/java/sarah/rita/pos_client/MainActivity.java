@@ -109,6 +109,7 @@ public class MainActivity extends ActionBarActivity {
         String nik_ktp;
         long saldo;
         String nama=null;
+        String token = "";
         ProgressDialog progressDialog;
 
         @Override
@@ -143,6 +144,7 @@ public class MainActivity extends ActionBarActivity {
                         nama = res.getString("nama");
                         nik_ktp = res.getString("nik_ktp");
                         saldo = res.getLong("saldo");
+                        token = res.getString("token");
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -175,6 +177,7 @@ public class MainActivity extends ActionBarActivity {
                 b.putLong("saldo",saldo);
                 b.putString("nik_ktp",nik_ktp);
                 b.putString("nama",nama);
+                b.putString("token",token);
                 intent.putExtras(b); //Put your id to your next Intent
                 startActivity(intent);
                 finish();

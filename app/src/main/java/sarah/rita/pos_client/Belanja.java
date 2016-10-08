@@ -101,6 +101,9 @@ public class Belanja extends ActionBarActivity {
     long saldo = 0;
     String nama = null;
     long curSaldo = 0;
+    String token = "";
+    String base_url = "http://pos-fingerprint.herokuapp.com/";
+//    String base_url = "http://pos-server-fp.herokuapp.com/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +127,7 @@ public class Belanja extends ActionBarActivity {
             id_user= b.getInt("id");
             nama = b.getString("nama");
             saldo = b.getLong("saldo");
+            token = b.getString("token");
             Log.d("saldo", String.valueOf(saldo));
         }
         curSaldo=saldo;
@@ -699,6 +703,7 @@ public class Belanja extends ActionBarActivity {
         b.putInt("id", id_user); //Your id
         b.putLong("saldo",curSaldo);
         b.putString("nama",nama);
+        b.putString("token",token);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
         finish();
@@ -723,7 +728,7 @@ public class Belanja extends ActionBarActivity {
 //            if(isNetworkAvailable()) {
                 String result = "";
                 HttpClient client = new DefaultHttpClient();
-                HttpGet request = new HttpGet("http://pos-server-fp.herokuapp.com/api/getbarang");
+                HttpGet request = new HttpGet(base_url+"api/getbarang");
                 HttpResponse response;
 
                 try {
@@ -779,7 +784,7 @@ public class Belanja extends ActionBarActivity {
                         int stok = res.getInt("stok");
                         int harga = res.getInt("harga");
                         int id_produk = res.getInt("id");
-                        String url = "http://pos-server-fp.herokuapp.com/asset/img/" + res.getString("icon");
+                        String url = base_url + "asset/img/" + res.getString("icon");
                         generateUI(nama, harga, stok, url, id_produk);
 
                     } catch (JSONException e) {
@@ -837,7 +842,7 @@ public class Belanja extends ActionBarActivity {
             String result = "";
 
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://pos-server-fp.herokuapp.com/api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas);
+            HttpGet request = new HttpGet(base_url + "api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas+"&token="+token);
             HttpResponse response;
 
             try {
@@ -892,7 +897,7 @@ public class Belanja extends ActionBarActivity {
             String message = null;
             String result = "";
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://pos-server-fp.herokuapp.com/api/postsaldo?id="+id_user+"&saldo="+curSaldo);
+            HttpGet request = new HttpGet(base_url + "api/postsaldo?id="+id_user+"&saldo="+curSaldo+"&token="+token);
             HttpResponse response;
 
             try {
@@ -906,7 +911,7 @@ public class Belanja extends ActionBarActivity {
                         result += line;
                     }
                     JSONObject arrRes = new JSONObject(result);
-                    message = arrRes.getString("response");
+                    message = arrRes.getString("token");
                     Log.d("message",message);
 
                 } catch (IOException e1) {
@@ -929,10 +934,10 @@ public class Belanja extends ActionBarActivity {
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(final String _token) {
             progressDialog.dismiss();
-            if (result != null) {
-                if (result.contains("success")) {
+            if (_token != null) {
+                if (_token.length()>0) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
                     builder.setMessage("Pembelian berhasil dilakukan")
                             .setCancelable(false)
@@ -944,6 +949,7 @@ public class Belanja extends ActionBarActivity {
                                     b.putInt("id", id_user); //Your id
                                     b.putLong("saldo", curSaldo);
                                     b.putString("nama", nama);
+                                    b.putString("token", _token);
                                     intent.putExtras(b); //Put your id to your next Intent
                                     startActivity(intent);
                                     finish();
@@ -998,7 +1004,7 @@ public class Belanja extends ActionBarActivity {
 
             try {
                 DefaultHttpClient httpclient = new DefaultHttpClient();
-                HttpPost httpPostRequest = new HttpPost("http://pos-server-fp.herokuapp.com/api/posthistory");
+                HttpPost httpPostRequest = new HttpPost(base_url + "api/posthistory");
 
                 JSONObject sendObject = new JSONObject();
                 sendObject.put("id_user",1);

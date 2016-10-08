@@ -22,6 +22,7 @@ public class MenuUtama extends ActionBarActivity {
     String nama = null;
     long saldo = 0 ;
     String nik_ktp = null;
+    String token = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class MenuUtama extends ActionBarActivity {
             saldo = b.getLong("saldo");
             nik_ktp = b.getString("nik_ktp");
             nama= b.getString("nama");
+            token = b.getString("token");
 
             Log.d("id di mnu utama", String.valueOf(id));
         }
@@ -93,6 +95,7 @@ public class MenuUtama extends ActionBarActivity {
         b.putInt("id", id); //Your id
         b.putLong("saldo",saldo);
         b.putString("nama",nama);
+        b.putString("token",token);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
         finish();
@@ -106,6 +109,7 @@ public class MenuUtama extends ActionBarActivity {
         b.putInt("id", id); //Your id
         b.putLong("saldo",saldo);
         b.putString("nama",nama);
+        b.putString("token",token);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
         finish();
