@@ -102,8 +102,8 @@ public class Belanja extends ActionBarActivity {
     String nama = null;
     long curSaldo = 0;
     String token = "";
-    String base_url = "http://pos-fingerprint.herokuapp.com/";
-//    String base_url = "http://pos-server-fp.herokuapp.com/";
+//    String base_url = "http://pos-fingerprint.herokuapp.com/";
+    String base_url = "http://pos-server-fp.herokuapp.com/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,6 +208,7 @@ public class Belanja extends ActionBarActivity {
                         b.putInt("id", id_user); //Your id
                         b.putLong("saldo", curSaldo);
                         b.putString("nama", nama);
+                        b.putString("token", token);
                         intent.putExtras(b); //Put your id to your next Intent
                         startActivity(intent);
                         finish();
@@ -894,10 +895,12 @@ public class Belanja extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            String message = null;
+            String message = "";
             String result = "";
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(base_url + "api/postsaldo?id="+id_user+"&saldo="+curSaldo+"&token="+token);
+            String url = base_url + "api/postsaldo?id="+id_user+"&saldo="+curSaldo+"&token="+token;
+            Log.d("url belanja saldo",url);
+            HttpGet request = new HttpGet(url);
             HttpResponse response;
 
             try {
@@ -910,8 +913,9 @@ public class Belanja extends ActionBarActivity {
                     while ((line = rd.readLine()) != null) {
                         result += line;
                     }
-                    JSONObject arrRes = new JSONObject(result);
-                    message = arrRes.getString("token");
+//                    JSONArray arrRes = new JSONArray(result);
+                    JSONObject res = new JSONObject(result);
+                    message = res.getString("token");
                     Log.d("message",message);
 
                 } catch (IOException e1) {

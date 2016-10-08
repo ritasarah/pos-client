@@ -65,8 +65,8 @@ public class Riwayat extends ActionBarActivity {
     String dateawal;
     String dateakhir;
     String token = "";
-    String base_url = "http://pos-fingerprint.herokuapp.com/";
-//    String base_url = "http://pos-server-fp.herokuapp.com/";
+//    String base_url = "http://pos-fingerprint.herokuapp.com/";
+    String base_url = "http://pos-server-fp.herokuapp.com/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +142,7 @@ public class Riwayat extends ActionBarActivity {
         builder.setMessage("Koneksi internet Anda bermasalah")
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                    public void onClick(DialogInterface dialog, int _id) {
                         //do things
                         Intent intent = new Intent(Riwayat.this, MenuUtama.class);
                         Bundle b = new Bundle();
@@ -434,6 +434,7 @@ public class Riwayat extends ActionBarActivity {
         b.putInt("id", id); //Your id
         b.putLong("saldo",saldo);
         b.putString("nama",nama);
+        b.putString("token",token);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
         finish();

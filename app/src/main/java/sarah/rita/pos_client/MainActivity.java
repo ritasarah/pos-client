@@ -33,6 +33,8 @@ import java.net.URLEncoder;
 
 public class MainActivity extends ActionBarActivity {
     int id;
+//    String base_url = "http://pos-fingerprint.herokuapp.com/";
+    String base_url = "http://pos-server-fp.herokuapp.com/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +124,7 @@ public class MainActivity extends ActionBarActivity {
 //            if(isNetworkAvailable()) {
                 String result = "";
                 HttpClient client = new DefaultHttpClient();
-                HttpGet request = new HttpGet("http://pos-server-fp.herokuapp.com/api/getcredentials?id="+id);
+                HttpGet request = new HttpGet(base_url+"api/getcredentials?id="+id);
                 HttpResponse response;
 
                 try {
@@ -145,6 +147,7 @@ public class MainActivity extends ActionBarActivity {
                         nik_ktp = res.getString("nik_ktp");
                         saldo = res.getLong("saldo");
                         token = res.getString("token");
+                        Log.d("token",token);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
