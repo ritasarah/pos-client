@@ -102,6 +102,7 @@ public class Belanja extends ActionBarActivity {
     String nama = null;
     long curSaldo = 0;
     String token = "";
+    int id_toko =1 ;
 //    String base_url = "http://pos-fingerprint.herokuapp.com/";
     String base_url = "http://pos-server-fp.herokuapp.com/";
 
@@ -705,7 +706,7 @@ public class Belanja extends ActionBarActivity {
 //            if(isNetworkAvailable()) {
                 String result = "";
                 HttpClient client = new DefaultHttpClient();
-                HttpGet request = new HttpGet(base_url+"api/getbarang");
+                HttpGet request = new HttpGet(base_url+"api/getbarang?id_toko="+id_toko);
                 HttpResponse response;
 
                 try {
@@ -834,7 +835,7 @@ public class Belanja extends ActionBarActivity {
             String result = "";
 
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(base_url + "api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas+"&token="+token);
+            HttpGet request = new HttpGet(base_url + "api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas+"&token="+token+"&saldo"+curSaldo);
             HttpResponse response;
 
             try {
