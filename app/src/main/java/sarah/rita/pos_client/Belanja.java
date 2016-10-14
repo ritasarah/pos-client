@@ -253,7 +253,14 @@ public class Belanja extends ActionBarActivity {
             for (int i=0; i<boughObjList.size(); i++)
                 _totalBeli += boughObjList.get(i).totalBeli;
         }
-        _saldoAkhir = _saldoAwal - _totalBeli;
+//        _saldoAkhir = _saldoAwal - _totalBeli;
+        _saldoAkhir = curSaldo;
+
+        if (_saldoAwal - _totalBeli != _saldoAkhir ) {
+            Toast.makeText(getApplicationContext(),
+                    "kok ga pas ya curSaldo sama itungan iterasi, hmmm", Toast.LENGTH_SHORT)
+                    .show();
+        }
 
         TextView saldoAwal = (TextView) findViewById(R.id.saldo_awal);
         TextView saldoAkhir = (TextView) findViewById(R.id.saldo_akhir);
