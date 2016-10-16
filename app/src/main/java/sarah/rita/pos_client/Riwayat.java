@@ -149,6 +149,7 @@ public class Riwayat extends ActionBarActivity {
                         b.putInt("id", id); //Your id
                         b.putLong("saldo",saldo);
                         b.putString("nama",nama);
+                        b.putString("token", token);
                         intent.putExtras(b); //Put your id to your next Intent
                         startActivity(intent);
                         finish();
@@ -375,7 +376,7 @@ public class Riwayat extends ActionBarActivity {
         jangkaLayout.setVisibility(View.GONE);
     }
 
-    public void generateUI (String namaBarang, String tanggal, int qty, String linkGambar) {
+    public void generateUI (String namaBarang, String tanggal, float qty, String linkGambar) {
         Display display = getWindowManager().getDefaultDisplay();
         int image_width = display.getWidth()/5;
         int image_height = (int) ((image_width*3)/4);
@@ -419,7 +420,7 @@ public class Riwayat extends ActionBarActivity {
         infoLayout.addView(infoTV);
 
         infoTV = new TextView(this);
-        infoStr = "Jumlah dibeli: " + Integer.toString(qty);
+        infoStr = "Jumlah dibeli: " + Float.toString(qty);
         infoTV.setText(infoStr);
         infoTV.setLayoutParams(marginVertical);
         infoLayout.addView(infoTV);
@@ -516,7 +517,7 @@ public class Riwayat extends ActionBarActivity {
 
                         String tgl = res.getString("tanggal");
                         String nama = res.getString("nama");
-                        int kuantitas = res.getInt("kuantitas");
+                        float kuantitas = Float.parseFloat(String.valueOf(res.getString("kuantitas")));
                         String link = base_url + "asset/img/" + res.getString("icon");
                         generateUI(nama, tgl, kuantitas, link);
 

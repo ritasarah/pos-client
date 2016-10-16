@@ -82,13 +82,15 @@ public class Belanja extends ActionBarActivity {
         public long totalBeli;
         public String urlImage;
         public int id;
+        public String satuan;
 
-        public boughtObj(String _nama, float _qty, long _sum, String _url, int _id) {
+        public boughtObj(String _nama, float _qty, long _sum, String _url, int _id, String _satuan) {
             namaBarang = _nama;
             qtyDibeli = _qty;
             totalBeli = _sum;
             urlImage = _url;
             id = _id;
+            satuan = _satuan;
         }
     }
 
@@ -136,6 +138,7 @@ public class Belanja extends ActionBarActivity {
         if (isConnectNetwork() && isNetworkAvailable()) {
             Viewer v = new Viewer();
             v.execute();
+            setInfoBeliSaldo();
         }
         else {
 //            AlertDialog.Builder builder = new AlertDialog.Builder(Belanja.this);
@@ -256,12 +259,6 @@ public class Belanja extends ActionBarActivity {
 //        _saldoAkhir = _saldoAwal - _totalBeli;
         _saldoAkhir = curSaldo;
 
-        if (_saldoAwal - _totalBeli != _saldoAkhir ) {
-            Toast.makeText(getApplicationContext(),
-                    "kok ga pas ya curSaldo sama itungan iterasi, hmmm", Toast.LENGTH_SHORT)
-                    .show();
-        }
-
         TextView saldoAwal = (TextView) findViewById(R.id.saldo_awal);
         TextView saldoAkhir = (TextView) findViewById(R.id.saldo_akhir);
         TextView totalBeli = (TextView) findViewById(R.id.total);
@@ -271,7 +268,7 @@ public class Belanja extends ActionBarActivity {
         totalBeli.setText(Long.toString(_totalBeli));
     }
 
-    public LinearLayout generateUI (final String judul, final int harga, final float stok, final String linkGambar, final int id_produk, final float scale) {
+    public LinearLayout generateUI (final String judul, final int harga, final float stok, final String linkGambar, final int id_produk, final float scale, final String satuan, int id_editText) {
         // Return  layout containing image, input text, button +-
 
         // Define margins
@@ -288,7 +285,7 @@ public class Belanja extends ActionBarActivity {
 
         // Add image View
         Display display = getWindowManager().getDefaultDisplay();
-        int image_width = display.getWidth()/5;
+        int image_width = display.getWidth()/4;
         int image_height = (int) ((image_width*3)/4);
         ImageView GambarIV = new ImageView(this);
         // Loading image from below url into imageView
@@ -298,15 +295,140 @@ public class Belanja extends ActionBarActivity {
                 .centerInside()
                 .into(GambarIV);
         GambarIV.setLayoutParams(marginVertical);
-        productLayout.addView(GambarIV);
+
+        // Make text view
+        TextView infoTV = new TextView(this);
+        String infoStr = judul + " (" + harga + "/" + satuan + ")";
+        infoTV.setText(infoStr);
+        infoTV.setLayoutParams(marginVertical);
+
+        // Make text view
+        TextView stokTV = new TextView(this);
+        infoStr = "Stok tersisa: " + stok + " " + satuan;
+        stokTV.setText(infoStr);
+        stokTV.setLayoutParams(marginVertical);
 
         // Add input text
         final EditText inputText = new EditText(Belanja.this);
+        inputText.setId(id_editText);
         inputText.setText("0");
-        inputText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        inputText.setFocusable(false);
+        inputText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        // onclick listener on input text
+        inputText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
+
+                // Setting Dialog Title
+                alertDialog2.setTitle("Masukkan Jumlah");
+
+                // Setting Dialog Message
+                alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
+                final EditText input = new EditText(Belanja.this);
+                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                alertDialog2.setView(input);
+
+                // Setting Positive "Yes" Btn
+                alertDialog2.setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                int qty = 0;
+                                try{
+                                    qty = Integer.parseInt(String.valueOf(input.getText())); // quantity barang yang hendak dibeli
+                                    inputText.setText(String.valueOf(qty));
+                                    Log.d("qty",String.valueOf(qty));
+                                }
+                                catch (Exception e){}
+                                int idx_produkDibeli = searchInBoughtList(judul);
+                                float stok_tersisa = 0;
+                                if (idx_produkDibeli > -1) //pernah beli barang itu sebelumnya
+                                    stok_tersisa = stok - boughObjList.get(idx_produkDibeli).qtyDibeli;
+                                else
+                                    stok_tersisa = stok;
+
+                                // cek cursaldo - (qty x harga) > 0
+                                if ((curSaldo - (qty * harga) >= 0) && (stok_tersisa >= qty) &&(qty>0)) {
+                                    Log.d("saldo",String.valueOf(saldo));
+                                    Log.d("cursaldo",String.valueOf(curSaldo));
+
+                                    curSaldo  = curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga);
+//                                    if(namaBarang.contains(judul)){
+
+                                    if (idx_produkDibeli > -1) {
+//                                        qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
+//                                        qtyBarang.set(namaBarang.indexOf(judul),(qty));
+                                        if (idx_produkDibeli > -1) {
+                                            boughObjList.get(idx_produkDibeli).qtyDibeli = qty;
+                                            boughObjList.get(idx_produkDibeli).totalBeli = Long.valueOf(qty * harga);
+                                        }
+                                    }
+                                    else{
+                                        Integer sumInt = qty * harga;
+                                        long sum = sumInt.longValue();
+
+                                        productObj pO = new productObj(judul, linkGambar, stok, harga, id_produk);
+                                        productObjList.add(pO);
+
+                                        boughtObj bO = new boughtObj(judul, qty, sum, linkGambar, id_produk, satuan);
+                                        boughObjList.add(bO);
+
+//                                        qtyBarang.add(qty);
+//                                        namaBarang.add(judul);
+                                    }
+                                    Log.d("nama barangs",namaBarang.toString());
+                                    Log.d("qty barangs",qtyBarang.toString());
+
+//                                    addBoughtList(judul, Integer.parseInt(String.valueOf(input.getText())), linkGambar, qty * harga);
+//                                    addBoughtList(judul, qty, linkGambar, qty * harga);
+                                    clearSVBoughtLayout();
+                                    addBoughtList();
+                                    setInfoBeliSaldo();
+                                }
+                                else if (curSaldo - (qty * harga) < 0) {
+                                    // Write your code here to execute after dialog
+                                    Toast.makeText(getApplicationContext(),
+                                            "Saldo Anda tidak cukup", Toast.LENGTH_SHORT)
+                                            .show();
+                                    alertDialog2.create().dismiss();
+                                }
+                                else if (stok_tersisa < qty) {
+                                    // Write your code here to execute after dialog
+                                    Toast.makeText(getApplicationContext(),
+                                            "Stok barang tidak mencukupi", Toast.LENGTH_SHORT)
+                                            .show();
+                                    alertDialog2.create().dismiss();
+                                }
+                            }
+                        });
+
+                // Setting Negative "NO" Btn
+                alertDialog2.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Write your code here to execute after dialog
+                                Toast.makeText(getApplicationContext(),
+                                        "Pembelian Dibatalkan", Toast.LENGTH_SHORT)
+                                        .show();
+                                dialog.cancel();
+                            }
+                        });
+
+                // Showing Alert Dialog
+                alertDialog2.show();
+            }
+        });
 
         // Add (-) Button
         Button minusBtn = new Button(Belanja.this);
+//        minusBtn.setLayoutParams(new LinearLayout.LayoutParams(image_width/4,image_width/5));
+        minusBtn.setLayoutParams(new LinearLayout.LayoutParams(300,250));
+
+        ViewGroup.LayoutParams params = minusBtn.getLayoutParams();
+        params.width = 400;
+        params.height = 500;
+        minusBtn.setLayoutParams(params);
+
         minusBtn.setText("-");
         minusBtn.setLayoutParams(marginHorizontal);
         minusBtn.setOnClickListener(
@@ -334,10 +456,12 @@ public class Belanja extends ActionBarActivity {
                         else if (qty > 0) {
                             if (idx_produkDibeli > -1) { //pernah beli barang itu sebelumnya, ubah stok
                                 boughObjList.get(idx_produkDibeli).qtyDibeli = qty;
+                                boughObjList.get(idx_produkDibeli).totalBeli = Math.round(qty * harga);
                             }
                         }
                         if (qty >= 0) {
-                            curSaldo += Math.round(qty * harga);
+//                            curSaldo += Math.round(qty * harga);
+                            curSaldo += Math.round(scale * harga);
                             inputText.setText(Float.toString(qty));
                             clearSVBoughtLayout();
                             addBoughtList();
@@ -375,10 +499,11 @@ public class Belanja extends ActionBarActivity {
 
                         // cek bisa beli ga, cek saldo masih cukup ga sama stok masih ada ga
                         long sum = Math.round(qty * harga);
-                        if ((curSaldo >= sum) & (stok >= qty)) {
+                        if ((curSaldo - Math.round(scale * harga) >= 0) & (stok >= qty)) {
                             int idx_produkDibeli = searchInBoughtList(judul);
                             if (idx_produkDibeli > -1) { //pernah beli barang itu sebelumnya, ubah
                                 boughObjList.get(idx_produkDibeli).qtyDibeli = qty;
+                                boughObjList.get(idx_produkDibeli).totalBeli = sum;
                             }
                             else { // belum pernah beli barang, tambah
                                 int idx_produk = searchInProductList(judul);
@@ -387,16 +512,17 @@ public class Belanja extends ActionBarActivity {
                                     productObj pO = new productObj(judul, linkGambar, stok, harga, id_produk);
                                     productObjList.add(pO);
                                 }
-                                boughtObj bO = new boughtObj(judul, qty, sum, linkGambar, id_produk);
+                                boughtObj bO = new boughtObj(judul, qty, sum, linkGambar, id_produk, satuan);
                                 boughObjList.add(bO);
                             }
-                            curSaldo = sum;
+                            curSaldo = curSaldo - Math.round(scale * harga);
                             inputText.setText(Float.toString(qty));
                             clearSVBoughtLayout();
                             addBoughtList();
                             setInfoBeliSaldo();
+                            Math.round(qty * harga);
                         }
-                        else if (curSaldo < sum) {
+                        else if (curSaldo - Math.round(scale * harga) < 0) {
                             Toast.makeText(getApplicationContext(),
                                     "Saldo Anda tidak cukup", Toast.LENGTH_SHORT)
                                     .show();
@@ -415,7 +541,9 @@ public class Belanja extends ActionBarActivity {
         inputLayout.addView(inputText);
         inputLayout.addView(plusBtn);
 
-
+        productLayout.addView(GambarIV);
+        productLayout.addView(infoTV);
+        productLayout.addView(stokTV);
         productLayout.addView(inputLayout);
         return productLayout;
     }
@@ -433,6 +561,7 @@ public class Belanja extends ActionBarActivity {
             final String namaBarang = boughObjList.get(i).namaBarang;
             final float qty = boughObjList.get(i).qtyDibeli;
             String imageURL = boughObjList.get(i).urlImage;
+            final String satuan = boughObjList.get(i).satuan;
             final long sum = boughObjList.get(i).totalBeli;
 
             // Add image View
@@ -474,7 +603,7 @@ public class Belanja extends ActionBarActivity {
             infoLayout.addView(infoTV);
 
             infoTV = new TextView(this);
-            infoStr = "Jumlah beli: " + qty;
+            infoStr = "Jumlah beli: " + qty + " " + satuan;
             infoTV.setText(infoStr);
             infoTV.setLayoutParams(marginVertical);
             infoLayout.addView(infoTV);
@@ -486,129 +615,6 @@ public class Belanja extends ActionBarActivity {
             infoLayout.addView(infoTV);
 
             rowLayout.addView(infoLayout);
-
-
-            // Make delete button
-            Button delBtn = new Button(Belanja.this);
-            delBtn.setText("Hapus");
-            delBtn.setLayoutParams(marginHorizontal);
-            rowLayout.addView(delBtn);
-
-            delBtn.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-//                            scrollViewBoughtLayout.removeView(rowLayout);
-                            int idxDibeli = searchInBoughtList(namaBarang);
-                            int idxProduk = searchInBoughtList(namaBarang);
-
-                            if ((idxDibeli > -1) && idxProduk > -1) {
-                                double harga_dibeli = boughObjList.get(idxDibeli).qtyDibeli * productObjList.get(idxProduk).harga;
-                                long total_dibeli = Math.round(harga_dibeli);
-                                curSaldo += total_dibeli;
-                                boughObjList.remove(idxDibeli);
-                                clearSVBoughtLayout();
-                                addBoughtList();
-                                setInfoBeliSaldo();
-                            }
-                            else {
-                                // ada error, handle! exception kah?
-                            }
-                        }
-                    }
-            );
-
-            // Make change button
-            Button chgBtn = new Button(Belanja.this);
-            chgBtn.setText("Ubah");
-            chgBtn.setLayoutParams(marginHorizontal);
-            rowLayout.addView(chgBtn);
-
-            chgBtn.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            final AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(Belanja.this);
-
-                            // Setting Dialog Title
-                            alertDialog2.setTitle("Masukkan Jumlah");
-
-                            // Setting Dialog Message
-                            alertDialog2.setMessage("Masukkan jumlah benda yang hendak dibeli");
-                            final EditText input = new EditText(Belanja.this);
-                            input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                            alertDialog2.setView(input);
-                            input.setText(Float.toString(qty));
-
-                            // Setting Positive "Yes" Btn
-                            alertDialog2.setPositiveButton("OK",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            int newQty = Integer.parseInt(String.valueOf(input.getText())); // quantity baru yang mau dibeli user
-                                            int idxDibeli = searchInBoughtList(namaBarang);
-                                            int idxProduk = searchInProductList(namaBarang);
-
-                                            float stokAwal = productObjList.get(idxProduk).stok;
-                                            float stokDibeli = boughObjList.get(idxDibeli).qtyDibeli;
-                                            float stok_tersisa = stokAwal - stokDibeli;
-
-//                                            int stok_tersisa = productObjList.get(idxProduk).stok - boughObjList.get(idxDibeli).qtyDibeli;
-                                            if (stok_tersisa >= 0) { // masih bisa beli
-                                                boughObjList.get(idxDibeli).qtyDibeli = newQty;
-                                                boughObjList.get(idxDibeli).totalBeli = Long.valueOf(newQty * productObjList.get(idxProduk).harga);
-                                                clearSVBoughtLayout();
-                                                addBoughtList();
-                                                setInfoBeliSaldo();
-                                            }
-                                            else {
-                                                // gabisa beli lagi karena stok produk kurang
-                                                Toast.makeText(getApplicationContext(),
-                                                    "Stok produk tidak mencukupi", Toast.LENGTH_SHORT)
-                                                    .show();
-                                            }
-
-                                            //                                        // cek cursaldo - (qty x harga) > 0
-                                            //                                        if ((curSaldo - sum > 0) && (stok > Integer.parseInt(String.valueOf(input.getText())))) {
-                                            //                                            Log.d("saldo",String.valueOf(saldo));
-                                            //                                            curSaldo  = curSaldo - (Integer.parseInt(String.valueOf(input.getText())) * harga);
-                                            //                                            Log.d("cursaldo",String.valueOf(curSaldo));
-                                            //                                            if(namaBarang.contains(judul)){
-                                            //                                                qtyBarang.set(namaBarang.indexOf(judul),(Integer.parseInt(String.valueOf(input.getText()))+qtyBarang.get(namaBarang.indexOf(judul))));
-                                            //                                            }
-                                            //                                            else{
-                                            //                                                qtyBarang.add(Integer.parseInt(String.valueOf(input.getText())) );
-                                            //                                                namaBarang.add(judul);
-                                            //                                            }
-                                            //                                            Log.d("nama barangs",namaBarang.toString());
-                                            //                                            Log.d("qty barangs",qtyBarang.toString());
-                                            //                                        }else {
-                                            //                                            // Write your code here to execute after dialog
-                                            //                                            Toast.makeText(getApplicationContext(),
-                                            //                                                    "Gagal Memroses", Toast.LENGTH_SHORT)
-                                            //                                                    .show();
-                                            //                                            alertDialog2.create().dismiss();
-                                            //                                        }
-                                        }
-                                    });
-
-                            // Setting Negative "NO" Btn
-                            alertDialog2.setNegativeButton("Cancel",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            // Write your code here to execute after dialog
-                                            Toast.makeText(getApplicationContext(),
-                                                    "Pembelian Dibatalkan", Toast.LENGTH_SHORT)
-                                                    .show();
-                                            dialog.cancel();
-                                        }
-                                    });
-
-                            // Showing Alert Dialog
-                            alertDialog2.show();
-                        }
-                    }
-            );
-
 
             // Attack rowLayout to mainLayout
             scrollViewBoughtLayout.addView(rowLayout);
@@ -686,7 +692,7 @@ public class Belanja extends ActionBarActivity {
         Intent intent = new Intent(this, MenuUtama.class);
         Bundle b = new Bundle();
         b.putInt("id", id_user); //Your id
-        b.putLong("saldo",curSaldo);
+        b.putLong("saldo",saldo);
         b.putString("nama",nama);
         b.putString("token",token);
         intent.putExtras(b); //Put your id to your next Intent
@@ -774,18 +780,22 @@ public class Belanja extends ActionBarActivity {
                         int harga = res.getInt("harga");
                         int id_produk = res.getInt("id");
                         String url = base_url + "asset/img/" + res.getString("icon");
-                        float scale = Float.parseFloat(String.valueOf(0.25));
+//                        float scale = Float.parseFloat(String.valueOf(0.25));
+                        float scale = Float.parseFloat(String.valueOf(res.getString("skala")));
+                        String satuan = res.getString("satuan");
 
-                        LinearLayout productLayout = generateUI(nama, harga, stok, url, id_produk, scale);
-                        if (i%3 == 0) {
-                            rowLayout.addView(productLayout);
-                        }
-                        else {
+                        LinearLayout productLayout = generateUI(nama, harga, stok, url, id_produk, scale, satuan, (i+1)*100);
+                        int visibility = productLayout.getVisibility();
+                        productLayout.setVisibility(View.GONE);
+                        productLayout.setVisibility(visibility);
+                        rowLayout.addView(productLayout);
+                        if ((i+1)%3 == 0) {
                             scrollViewLayout.addView(rowLayout);
                             rowLayout = new LinearLayout(Belanja.this);
                             rowLayout.setOrientation(LinearLayout.HORIZONTAL);
-                            rowLayout.addView(productLayout);
                         }
+                        if ((i+1 == arrRes.length()) && (i+1)%3!=0)
+                            scrollViewLayout.addView(rowLayout);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -842,7 +852,7 @@ public class Belanja extends ActionBarActivity {
             String result = "";
 
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(base_url + "api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas+"&token="+token+"&saldo"+curSaldo);
+            HttpGet request = new HttpGet(base_url + "api/posthistori?id_user="+id_user+"&id_barang="+id_barang+"&kuantitas="+kuantitas+"&token="+token+"&saldo="+curSaldo);
             HttpResponse response;
 
             try {
